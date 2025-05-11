@@ -10,6 +10,9 @@
 	},
 	"files.associations": {
 		"raylib.h": "c",
-		"*.m": "c"
+		"*.m": "c",
+		"keyboard.h": "c",
+		"resource_dir.h": "c",
+		"graphic.h": "c"
 	}
 }

@@ -2,19 +2,11 @@
 #include "raylib.h"
 #include "resource_dir.h" // utility header for SearchAndSetResourceDir
 #include <stdio.h>
+#include "keyboard.h"
+#include "graphic.h"
 
 #define WINDOW_WIDHT 1600
 #define WINDOW_HEIGHT 800
-
-//----------------------------------------------------//
-#define MAP_SIZE 40
-
-#define CELL_WIDTH (WINDOW_WIDHT / MAP_SIZE)
-#define CELL_HEIGHT (WINDOW_HEIGHT / MAP_SIZE)
-
-#define POSITION_RATIO_X WINDOW_WIDHT - (x * CELL_WIDTH)
-#define POSITION_RATIO_Y WINDOW_HEIGHT - (y * CELL_HEIGHT)
-//----------------------------------------------------//
 
 //------------------------ Global Var--------------------------------//
 enum game_mode_options
@@ -28,67 +20,6 @@ enum game_mode_options
 int global_press_key = 0;
 enum game_mode_options global_game_screen = main_menu;
 
-//------------------------ Keyboard Functions--------------------------------//
-int driverKeyboard()
-{
-	static float key_repeat_timer = 0.0f;
-	static bool is_key_pressed[6] = {false}; // Para 6 teclas monitoradas
-
-	float delay_to_start_repeat = 0.4f;
-	float repeat_rate = 0.1f;
-
-	int command = ' ';
-
-	struct
-	{
-		int key;
-		char command;
-	} keys[] = {
-		{KEY_W, 'w'},
-		{KEY_A, 'a'},
-		{KEY_S, 's'},
-		{KEY_D, 'd'},
-		{KEY_ENTER, '\n'},
-		{KEY_P, 'p'}};
-
-	for (int i = 0; i < sizeof(keys) / sizeof(keys[0]); i++)
-	{
-		if (IsKeyPressed(keys[i].key))
-		{
-			command = keys[i].command;
-			key_repeat_timer = delay_to_start_repeat;
-			is_key_pressed[i] = true;
-			break;
-		}
-		else if (IsKeyDown(keys[i].key) && is_key_pressed[i])
-		{
-			key_repeat_timer -= GetFrameTime();
-			if (key_repeat_timer <= 0.0f)
-			{
-				command = keys[i].command;
-				key_repeat_timer = repeat_rate;
-				break;
-			}
-		}
-		else
-		{
-			is_key_pressed[i] = false;
-		}
-	}
-
-	return command;
-}
-void readKeyboard(int *key)
-{
-	*key = driverKeyboard();
-}
-
-//------------------------ Print Functions--------------------------------//
-
-void driver_print_text(char *text, int x, int y, Color cor)
-{
-	DrawText(text, x, y, 40, cor);
-}
 
 //------------------------ Menu Functions--------------------------------//
 
@@ -124,10 +55,10 @@ int main_menu_f()
 	int offset_x = 200;
 	int offset_y = WINDOW_HEIGHT / 2;
 
-	driver_print_text("ZINF", offset_x, offset_y, GREEN);
-	driver_print_text("Início", offset_x, offset_y * 1.2, menu_index == 1 ? WHITE : GRAY);
-	driver_print_text("Ranking", offset_x, offset_y * 1.3, menu_index == 2 ? WHITE : GRAY);
-	driver_print_text("Sair", offset_x, offset_y * 1.4, menu_index == 3 ? WHITE : GRAY);
+	driver_print_text("ZINF", offset_x, offset_y, 4);
+	driver_print_text("Início", offset_x, offset_y * 1.2, !(menu_index == 1));
+	driver_print_text("Ranking", offset_x, offset_y * 1.3, !(menu_index == 2));
+	driver_print_text("Sair", offset_x, offset_y * 1.4, !(menu_index == 3));
 }
 
 //-------------------------- Game Function -------------------------------//
@@ -142,9 +73,9 @@ void in_game_f()
 	if (is_paused)
 	{
 		DrawRectangle(50, WINDOW_HEIGHT / 2, 900, 300, RED);
-		driver_print_text("Pressione:", 80, WINDOW_HEIGHT / 2 + 80, WHITE);
-		driver_print_text("-> A tecla Enter para voltar ao menu", 80, WINDOW_HEIGHT / 2 +120, WHITE);
-		driver_print_text("-> A tecla W para retomar ", 80, WINDOW_HEIGHT / 2 + 160, WHITE);
+		driver_print_text("Pressione:", 80, WINDOW_HEIGHT / 2 + 80, 0);
+		driver_print_text("-> A tecla Enter para voltar ao menu", 80, WINDOW_HEIGHT / 2 + 120, 0);
+		driver_print_text("-> A tecla W para retomar ", 80, WINDOW_HEIGHT / 2 + 160, 0);
 
 		if (global_press_key == '\n')
 		{
@@ -158,7 +89,6 @@ void in_game_f()
 	}
 	else
 	{
-
 		switch (global_press_key)
 		{
 		case 'w':
@@ -171,14 +101,14 @@ void in_game_f()
 			x -= 20;
 			break;
 		case 'd':
-		if(x+1<WINDOW_WIDHT-20)
-			x += 20;
+			if (x + 1 < WINDOW_WIDHT - 20)
+				x += 20;
 			break;
 		case 'p':
 			is_paused = true;
 			break;
 		}
-		driver_print_text("-> [P]: pause ", WINDOW_WIDHT -300,WINDOW_HEIGHT - 50, WHITE);
+		driver_print_text("-> [P]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
 		DrawRectangle(x, y, 20, 20, WHITE);
 	}
 }
@@ -195,7 +125,7 @@ int main()
 	{
 		BeginDrawing();
 		ClearBackground(BLACK);
-		readKeyboard(&global_press_key);
+		read_keyboard(&global_press_key);
 
 		switch (global_game_screen)
 		{
