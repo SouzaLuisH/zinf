@@ -92,19 +92,21 @@ void driver_print_text(char *text, int x, int y, Color cor)
 
 //------------------------ Menu Functions--------------------------------//
 
-int main_menu_f(int *menu_index)
+int main_menu_f()
 {
-	if (global_press_key == 's' && (*menu_index) < 3)
+	static int menu_index = 1;
+
+	if (global_press_key == 's' && (menu_index) < 3)
 	{
-		*menu_index = *menu_index + 1;
+		menu_index = menu_index + 1;
 	}
-	else if (global_press_key == 'w' && (*menu_index > 1))
+	else if (global_press_key == 'w' && (menu_index > 1))
 	{
-		*menu_index = *menu_index - 1;
+		menu_index = menu_index - 1;
 	}
 	else if (global_press_key == '\n')
 	{
-		switch (*menu_index)
+		switch (menu_index)
 		{
 		case 1:
 			global_game_screen = in_game;
@@ -116,16 +118,16 @@ int main_menu_f(int *menu_index)
 			global_game_screen = quit;
 			break;
 		}
-		*menu_index = 1;
+		menu_index = 1;
 	}
 
 	int offset_x = 200;
 	int offset_y = WINDOW_HEIGHT / 2;
 
 	driver_print_text("ZINF", offset_x, offset_y, GREEN);
-	driver_print_text("Início", offset_x, offset_y * 1.2, *menu_index == 1 ? WHITE : GRAY);
-	driver_print_text("Ranking", offset_x, offset_y * 1.3, *menu_index == 2 ? WHITE : GRAY);
-	driver_print_text("Sair", offset_x, offset_y * 1.4, *menu_index == 3 ? WHITE : GRAY);
+	driver_print_text("Início", offset_x, offset_y * 1.2, menu_index == 1 ? WHITE : GRAY);
+	driver_print_text("Ranking", offset_x, offset_y * 1.3, menu_index == 2 ? WHITE : GRAY);
+	driver_print_text("Sair", offset_x, offset_y * 1.4, menu_index == 3 ? WHITE : GRAY);
 }
 
 //-------------------------- Game Function -------------------------------//
@@ -135,23 +137,23 @@ float y = 0;
 
 void in_game_f()
 {
-	static int is_paused = 0;
+	static bool is_paused = false;
 
 	if (is_paused)
 	{
 		DrawRectangle(50, WINDOW_HEIGHT / 2, 900, 300, RED);
 		driver_print_text("Pressione:", 80, WINDOW_HEIGHT / 2 + 80, WHITE);
-		driver_print_text("-> A tecla Enter para sair do jogo", 80, WINDOW_HEIGHT / 2 +120, WHITE);
+		driver_print_text("-> A tecla Enter para voltar ao menu", 80, WINDOW_HEIGHT / 2 +120, WHITE);
 		driver_print_text("-> A tecla W para retomar ", 80, WINDOW_HEIGHT / 2 + 160, WHITE);
 
 		if (global_press_key == '\n')
 		{
-			is_paused = 0;
-			global_game_screen = quit;
+			is_paused = false;
+			global_game_screen = main_menu;
 		}
 		else if (global_press_key == 'w')
 		{
-			is_paused = 0;
+			is_paused = false;
 		}
 	}
 	else
@@ -173,7 +175,7 @@ void in_game_f()
 			x += 20;
 			break;
 		case 'p':
-			is_paused = 1;
+			is_paused = true;
 			break;
 		}
 		driver_print_text("-> [P]: pause ", WINDOW_WIDHT -300,WINDOW_HEIGHT - 50, WHITE);
@@ -183,7 +185,6 @@ void in_game_f()
 
 int main()
 {
-	int menu_index = 1;
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 	InitWindow(WINDOW_WIDHT, WINDOW_HEIGHT, "ZINF");
 	SetExitKey(0);
@@ -199,7 +200,7 @@ int main()
 		switch (global_game_screen)
 		{
 		case main_menu:
-			main_menu_f(&menu_index);
+			main_menu_f();
 			break;
 
 		case in_game:
