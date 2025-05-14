@@ -5,8 +5,8 @@
 #include "keyboard.h"
 #include "graphic.h"
 
-#define WINDOW_WIDHT 1600
-#define WINDOW_HEIGHT 800
+#define WINDOW_WIDHT 1000
+#define WINDOW_HEIGHT 500
 
 //------------------------ Global Var--------------------------------//
 enum game_mode_options
