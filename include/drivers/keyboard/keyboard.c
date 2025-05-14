@@ -25,7 +25,8 @@ int driver_keyboard()
 		{KEY_S, 's'},
 		{KEY_D, 'd'},
 		{KEY_ENTER, '\n'},
-		{KEY_P, 'p'}};
+		{KEY_P, 'p'},
+		{KEY_J, 'j'}};
 
 	while (i < sizeof(keys) / sizeof(keys[0]))
 	{
