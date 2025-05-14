@@ -13,7 +13,7 @@ This project is a game inspired in "The Legend of Zelda" (1986), an adventure RP
 * CD into the build folder
 * run `./premake5 gmake2`
 * CD back to the root
-* run `./build_run.sh`
+* run `./build_all_run.sh`
 
 # Output files
 The built code will be in the bin dir
