@@ -109,7 +109,7 @@ void in_game_f()
 			break;
 		}
 		driver_print_text("-> [P]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
-		DrawRectangle(x, y, 20, 20, WHITE);
+		DrawRectangle(x, y, 20, 20, RED);
 	}
 }
 
