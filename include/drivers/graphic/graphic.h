@@ -1,8 +1,7 @@
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
 
-#include "raylib.h"
-
+float get_frame_time();
 void driver_print_text(char *text, int x, int y, int color);
 
 

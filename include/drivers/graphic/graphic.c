@@ -1,4 +1,10 @@
 #include "graphic.h"
+#include "raylib.h"
+
+
+float get_frame_time(){
+   return GetFrameTime();
+}
 
 void driver_print_text(char *text, int x, int y, int color)
 {
