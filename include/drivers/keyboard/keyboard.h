@@ -2,8 +2,8 @@
 #define KEYBOARD_H
 #include "raylib.h"
 
-int driver_keyboard(void);
-void read_keyboard(int *key);
+unsigned char driver_keyboard(void);
+void read_keyboard(unsigned char *key);
 
 #endif // KEYBOARD_H
 
