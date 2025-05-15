@@ -8,7 +8,7 @@ void read_keyboard(unsigned char *key)
 unsigned char driver_keyboard()
 {
 	static float key_repeat_timer = 0.0f;
-	static bool is_key_pressed[6] = {false}; // Para 6 teclas monitoradas
+	static bool is_key_pressed[N_KEYS_MAPPED] = {false}; // Para 6 teclas monitoradas
 
 	float delay_to_start_repeat = 0.4f;
 	float repeat_rate = 0.1f;
@@ -19,7 +19,7 @@ unsigned char driver_keyboard()
 	{
 		int key;
 		unsigned char command;
-	} keys[] = {
+	} keys[N_KEYS_MAPPED] = {
 		{KEY_W, 'w'},
 		{KEY_A, 'a'},
 		{KEY_S, 's'},
