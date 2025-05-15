@@ -1,4 +1,6 @@
+#include <stdbool.h>
 #include "keyboard.h"
+#include "raylib.h"
 
 void read_keyboard(unsigned char *key)
 {

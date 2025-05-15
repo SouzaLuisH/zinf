@@ -1,6 +1,5 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
-#include "raylib.h"
 
 #define N_KEYS_MAPPED 8
 
