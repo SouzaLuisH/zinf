@@ -7,7 +7,7 @@ int player_init_status(Player *player)
     player->hasWeapon = false;
     player->isWeaponActive = false;
     player->lives = 3;
-    player->orientation = south;
+    player->orientation = SOUTH;
     player->score = 0;
     player->position.x = 0;
     player->position.y = 0;
@@ -21,7 +21,6 @@ int player_movimentation(Player *player, unsigned char pressed_key)
                                                                   : 0;
     float move_y = pressed_key == 'w' ? -1.00 : pressed_key == 's' ? 1.00
                                                                    : 0;
-
     player->position.x += move_x * DEFAULT_PLAYER_VELOCITY;
     player->position.y += move_y * DEFAULT_PLAYER_VELOCITY;
 
@@ -34,21 +33,36 @@ int player_orientation(Player *player, unsigned char pressed_key)
     switch (pressed_key)
     {
     case 's':
-        player->orientation = south;
+        player->orientation = SOUTH;
         break;
     case 'w':
-        player->orientation = north;
+        player->orientation = NORTH;
         break;
 
     case 'd':
-        player->orientation = east;
+        player->orientation = EAST;
 
     case 'a':
-        player->orientation = west;
+        player->orientation = WEST;
         break;
     }
 
     return 1;
+}
+
+void get_player_initial_position(Player *player, char map[][24], int lenght, int height)
+{
+    for (int i = 0; i < lenght; i++)
+    {
+        for (int j = 0; j < height; j++)
+        {
+            if (map[i][j] == 'J')
+            {
+                player->position.x = j * 50;
+                player->position.y = i * 50;
+            }
+        }
+    }
 }
 
 // ----- weapon functions ------//
@@ -57,10 +71,12 @@ bool player_has_weapon(Player *player)
 {
     return player->hasWeapon;
 }
+
 bool is_player_weapon_active(Player *player)
 {
     return player->isWeaponActive;
 }
+
 bool handle_player_weapon(Player *player, unsigned char pressed_key)
 {
     if (player_has_weapon(player) == false)
@@ -120,17 +136,18 @@ void draw_player(Player *player)
         if (is_player_weapon_active(player))
         {
             // draw player with weapon active
-            DrawText("Weapon active", x_coord, y_coord, 20, WHITE);
+            driver_print_text("Weapon active", x_coord, y_coord, 0);
         }
         else
         {
             // draw player with weapon stand-by
-            DrawText("Weapon stand-by", x_coord, y_coord, 20, WHITE);
+            driver_print_text("Weapon stand-by", x_coord, y_coord, 0);
         }
     }
     else
     {
         // draw player without wearpon
-        DrawText("Without Weapon ", x_coord, y_coord, 20, WHITE);
+        driver_draw_square(x_coord, y_coord, 50, 3); // red
+        // driver_print_text("Without Weapon ", x_coord, y_coord, 0);
     }
 }

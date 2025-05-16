@@ -8,7 +8,7 @@ int player_init_status(Player* player);
 // movimentation
 int player_movimentation(Player *player,unsigned char pressed_key);
 int player_orientation(Player *player, unsigned char pressed_key);
-
+void get_player_initial_position(Player *player, char map[][24], int lenght, int height);
 
 // weapon
 bool player_has_weapon(Player *player);
