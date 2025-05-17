@@ -13,6 +13,20 @@
 		"*.m": "c",
 		"keyboard.h": "c",
 		"resource_dir.h": "c",
-		"graphic.h": "c"
-	}
+		"graphic.h": "c",
+		"game_def.h": "c",
+		"player.h": "c",
+		"enemies.h": "c",
+		"bit": "c",
+		"compare": "c",
+		"cstddef": "c",
+		"string": "c",
+		"optional": "c",
+		"limits": "c",
+		"memory": "c",
+		"new": "c",
+		"functional": "c",
+		"stdio.h": "c"
+	},
+	"C_Cpp.errorSquiggles": "disabled"
 }
