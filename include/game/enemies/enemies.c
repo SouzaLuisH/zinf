@@ -4,14 +4,12 @@
 
 int monster_init_status(Enemies *Monster)
 {
-   
-
     Monster->lives = 1;
     Monster->orientation = SOUTH;                           // TODO random orientation
-    Monster->position.x = 1150 * ((float)rand() / RAND_MAX); // TODO get position from text map
-    Monster->position.y = 750 * ((float)rand() / RAND_MAX); // TODO get position from text map
+    Monster->position.x =0; // TODO get position from text map
+    Monster->position.y = 0; // TODO get position from text map
     Monster->reward = 100;                                  // TODO random reward
-
+    Monster->isEnable = true;
     return 1;
 }
 
