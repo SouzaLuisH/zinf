@@ -34,7 +34,9 @@ void driver_draw_square(float x, float y, float side_lenght, int color)
         BLACK, // 2
         RED,   // 3
         GREEN, // 4
-        YELLOW // 5
+        YELLOW, // 5
+        PURPLE, //6
+        VIOLET, //7
     };
 
     DrawRectangle(x, y, side_lenght, side_lenght, availableColors[color]);
