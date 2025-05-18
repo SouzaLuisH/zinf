@@ -79,6 +79,9 @@ bool is_player_weapon_active(Player *player)
 
 bool handle_player_weapon(Player *player, unsigned char pressed_key)
 {
+
+    // BUG: when player press 'J' and after only move the aswd keys, the weapon still be activated
+    // possible solution: implement a debouncing
     if (player_has_weapon(player) == false)
     {
         return false; // player do not have weapon
