@@ -60,7 +60,7 @@ void draw_map(Game_State *state, int width, int height)
 
     for (int i = 0; i < state->n_monsters; i++)
     {
-        if (state->monsters->isEnable)
+        if (state->monsters[i].isEnable)
         {
             driver_draw_square(state->monsters[i].position.x, state->monsters[i].position.y, ITEM_SIZE, MAP_COLOR_MONSTER);
         }
@@ -232,6 +232,20 @@ bool check_weapon_colision(Vector2D position, int *weapon_position, Game_State *
     return false;
 }
 
+bool check_monster_player_colision(Vector2D position, int *monster_position, Game_State *map)
+{
+    for (int i = 0; i < map->n_monsters; i++)
+    {
+        if (position.x == map->monsters[i].position.x && position.y == map->monsters[i].position.y)
+        {
+            *monster_position = i;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 //----------handle elements functions -----//
 
 void handle_extra_lifes(Player *player, Game_State *map, char key_pressed)
@@ -286,6 +300,38 @@ void handle_player_movement(Player *player, Game_State *map, char key_pressed)
     }
 }
 
+void handle_player_monster_interation(Player *player, Game_State *map)
+{
+    int monster_position = 0;
+
+    if (check_monster_player_colision(player->position, &monster_position, map))
+    {
+        if (map->monsters[monster_position].isEnable)
+        {
+            if (player->hasWeapon && player->isWeaponActive)
+            {
+
+                map->monsters[monster_position].isEnable = false;
+                player->score += map->monsters[monster_position].reward;
+            }
+            else
+            {
+                player->lives -= 1;
+                handle_player_movement(player, map, 's'); // TODO implement move by orientation
+                handle_player_movement(player, map, 'a'); // TODO implement move by orientation
+            }
+
+            if (DEBUG_PRINTS)
+            {
+
+                printf("\nPLAYER HAS WEAPON: %d", player->hasWeapon);
+                printf("\nPLAYER LIVES: %d", player->lives);
+                printf("\nPLAYER SCORE: %d\n\n", player->score);
+            }
+        }
+    }
+}
+
 //------------------------------------//
 
 int init_game_data()
@@ -308,7 +354,9 @@ void game_loop(char move)
     handle_player_movement(&Link, &Map_Data, move);
     handle_extra_lifes(&Link, &Map_Data, move);
     handle_weapon_elements(&Link, &Map_Data, move);
+    //---
     handle_player_weapon(&Link, move);
+    handle_player_monster_interation(&Link, &Map_Data);
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
 }
