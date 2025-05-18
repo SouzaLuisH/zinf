@@ -137,12 +137,12 @@ void draw_player(Player *player)
         if (is_player_weapon_active(player))
         {
             // draw player with weapon active TODO use orientation to draw the player
-            driver_print_text("Weapon active", x_coord, y_coord, 0);
+            driver_draw_square(x_coord, y_coord, 50, 7); // violet
         }
         else
         {
             // draw player with weapon stand-by TODO use orientation to draw the player
-            driver_print_text("Weapon stand-by", x_coord, y_coord, 0);
+            driver_draw_square(x_coord, y_coord, 50, 6); // purple
         }
     }
     else
