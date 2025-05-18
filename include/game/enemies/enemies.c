@@ -8,7 +8,7 @@ int monster_init_status(Enemies *Monster)
     Monster->orientation = SOUTH;                           // TODO random orientation
     Monster->position.x =0; // TODO get position from text map
     Monster->position.y = 0; // TODO get position from text map
-    Monster->reward = 100;                                  // TODO random reward
+    Monster->reward = 99*((float)rand()/RAND_MAX); +1;// TODO random reward
     Monster->isEnable = true;
     return 1;
 }
