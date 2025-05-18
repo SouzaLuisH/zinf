@@ -15,7 +15,7 @@ int player_init_status(Player *player)
     return 1;
 }
 
-int handle_player_movement(Player *player, unsigned char pressed_key)
+int move_player(Player *player, unsigned char pressed_key)
 {
     float move_x = pressed_key == 'd' ? 1.00 : pressed_key == 'a' ? -1.00
                                                                   : 0;
