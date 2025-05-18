@@ -17,6 +17,11 @@
 #define MAP_LIFE_SPACE 'V'
 #define MAP_WALL_SPACE 'P'
 
+#define MAP_WIDTH 24
+#define MAP_HEIGHT 16
+#define ITEM_SIZE 50
+
+//TODO move colors to graphic.h
 #define MAP_COLOR_EMPTY 2   // BLACK
 #define MAP_COLOR_MONSTER 5 // YELLOW
 #define MAP_COLOR_WEAPON 1  // GRAY
@@ -24,9 +29,7 @@
 #define MAP_COLOR_WALL 0    // WHITE
 #define MAP_COLOR_UNKNOWN -1
 
-#define MAP_WIDTH 24
-#define MAP_HEIGHT 16
-#define ITEM_SIZE 50
+
 
 //---- GAME STRUTURES ----///
 typedef struct

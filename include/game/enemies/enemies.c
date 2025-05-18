@@ -14,6 +14,28 @@ int monster_init_status(Enemies *Monster)
 }
 
 
+void fill_monster_init_data(Enemies *monsters, char map[][MAP_WIDTH], int width, int height, char target_char)
+{
+    int index = 0;
+
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (map[i][j] == target_char)
+            {
+                monster_init_status(&monsters[index]);
+                monsters[index].position.x = j * ITEM_SIZE;
+                monsters[index].position.y = i * ITEM_SIZE;
+                index++;
+            }
+        }
+    }
+}
+
+
+
+
 void draw_monster(Enemies *Monster)
 {
     float x_coord = Monster->position.x;
