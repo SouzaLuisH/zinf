@@ -66,6 +66,14 @@ typedef struct
     bool isEnable;
 } Enemies;
 
+typedef struct 
+{
+    Vector2D position;
+    bool isEnable;
+} Element;
+
+
+
 typedef struct
 {   //TODO : create a level flag to use later, when we implement the continue game function
     int n_walls;
@@ -73,9 +81,9 @@ typedef struct
     int n_monsters;
     Enemies *monsters;
     int n_lives;
-    Vector2D *lives; // TODO create a struct to flag if is_enable
+    Element *lives; // TODO create a struct to flag if is_enable
     int n_weapons;
-    Vector2D *weapons;// TODO create a struct to flag if is_enable
+    Element *weapons;// TODO create a struct to flag if is_enable
 } Game_State;
 
 // --------------- FUNCTION HEADERS --------//
