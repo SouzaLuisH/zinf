@@ -70,29 +70,7 @@ void draw_map(Game_State *state, int width, int height)
     }
 }
 
-//---------------------------------------------//
-
-// move to monster.c
-void fill_monster_init_data(Enemies *monsters, char map[][MAP_WIDTH], int width, int height, char target_char)
-{
-    int index = 0;
-
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            if (map[i][j] == target_char)
-            {
-                monster_init_status(&monsters[index]);
-                monsters[index].position.x = j * ITEM_SIZE;
-                monsters[index].position.y = i * ITEM_SIZE;
-                index++;
-            }
-        }
-    }
-}
-
-//----------------------------//
+//------------ INITIAL MAP FUNCITONS ----------------//
 void fill_element_positions(Vector2D *position, char map[][MAP_WIDTH], int width, int height, char target_char)
 {
     int index = 0;
@@ -110,12 +88,17 @@ void fill_element_positions(Vector2D *position, char map[][MAP_WIDTH], int width
     }
 }
 
-void get_position_of_all_elements(Game_State *map, char map_char[][MAP_WIDTH], int width, int height)
+void get_initial_position_of_all_elements(Game_State *map, char map_char[][MAP_WIDTH], int width, int height)
 {
     map->n_lives = 0;
     map->n_walls = 0;
     map->n_weapons = 0;
     map->n_monsters = 0;
+
+    map->lives = NULL;
+    map->monsters = NULL;
+    map->walls = NULL;
+    map->weapons = NULL;
 
     // get number of each elements
     for (int i = 0; i < height; i++)
@@ -159,6 +142,41 @@ void free_all_elements(Game_State *map)
     free(map->walls);
     free(map->weapons);
 }
+//----------------------------------------//
+
+bool check_wall_colision(Vector2D position, Game_State *map)
+{
+    for (int i = 0; i < map->n_walls; i++)
+    {
+        if (position.x == map->walls[i].x && position.y == map->walls[i].y)
+        {
+            return true;
+        }
+    }
+
+    if(position.x <0 || position.x > 24*ITEM_SIZE) return true;
+    if(position.y <0 || position.y > 16*ITEM_SIZE) return true;
+
+    return false;
+}
+
+void handle_player_movement(Player *player, Game_State *map, char key_pressed)
+{
+    float x_component = key_pressed == 'd' ? 1.00 : key_pressed == 'a' ? -1.00 : 0;
+    float y_component = key_pressed == 'w' ? -1.00 : key_pressed == 's' ? 1.00 : 0;
+
+    if (x_component == 0 & y_component == 0) return;
+
+    Vector2D new_player_pos = {player->position.x + x_component * DEFAULT_PLAYER_VELOCITY,
+                               player->position.y + y_component * DEFAULT_PLAYER_VELOCITY};
+
+    if (check_wall_colision(new_player_pos, map) == false)
+    {
+        move_player(player, key_pressed);
+    }
+}
+
+//------------------------------------//
 
 int init_game_data()
 {
@@ -166,19 +184,20 @@ int init_game_data()
     // TODO save map in matrix
     player_init_status(&Link);
     get_player_initial_position(&Link, archive, MAP_HEIGHT, MAP_WIDTH);
-    get_position_of_all_elements(&Map_Data, archive, MAP_WIDTH, MAP_HEIGHT);
+    get_initial_position_of_all_elements(&Map_Data, archive, MAP_WIDTH, MAP_HEIGHT);
     if (DEBUG_PRINTS)
     {
-        ("\nMonstros: %d, Vidas: %d, Armas: %d, Paredes: %d\n",
-         Map_Data.n_monsters, Map_Data.n_lives, Map_Data.n_weapons, Map_Data.n_walls);
+        printf("\nMonstros: %d, Vidas: %d, Armas: %d, Paredes: %d\n",
+               Map_Data.n_monsters, Map_Data.n_lives, Map_Data.n_weapons, Map_Data.n_walls);
     }
     return 1;
 }
 
 void game_loop(char move)
 {
-    handle_player_movement(&Link, move);
+    handle_player_movement(&Link, &Map_Data, move);
     handle_player_weapon(&Link, move);
+
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
 }
