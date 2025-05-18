@@ -176,8 +176,6 @@ void free_all_elements(Game_State *map)
     free(map->weapons);
 }
 
-
-
 //-------- Colision check function------------------------//
 
 void get_player_movement_coords(float *x, float *y, char key_pressed)
@@ -220,11 +218,21 @@ bool check_life_colision(Vector2D position, int *life_position, Game_State *map)
     return false;
 }
 
+bool check_weapon_colision(Vector2D position, int *weapon_position, Game_State *map)
+{
+    for (int i = 0; i < map->n_weapons; i++)
+    {
+        if (position.x == map->weapons[i].position.x && position.y == map->weapons[i].position.y)
+        {
+            *weapon_position = i;
+            return true;
+        }
+    }
 
-
+    return false;
+}
 
 //----------handle elements functions -----//
-
 
 void handle_extra_lifes(Player *player, Game_State *map, char key_pressed)
 {
@@ -238,6 +246,22 @@ void handle_extra_lifes(Player *player, Game_State *map, char key_pressed)
             player->lives += 1;
             if (DEBUG_PRINTS)
                 printf("\nPLAYER LIVES: %d\n", player->lives);
+        }
+    }
+}
+
+void handle_weapon_elements(Player *player, Game_State *map, char key_pressed)
+{
+    int weapon_position = 0;
+
+    if (check_weapon_colision(player->position, &weapon_position, map))
+    {
+        if (map->weapons[weapon_position].isEnable)
+        {
+            map->weapons[weapon_position].isEnable = false;
+            player->hasWeapon = true;
+            if (DEBUG_PRINTS)
+                printf("\nPLAYER HAS WEAPON: %d\n", player->hasWeapon);
         }
     }
 }
@@ -283,6 +307,7 @@ void game_loop(char move)
 {
     handle_player_movement(&Link, &Map_Data, move);
     handle_extra_lifes(&Link, &Map_Data, move);
+    handle_weapon_elements(&Link, &Map_Data, move);
     handle_player_weapon(&Link, move);
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
