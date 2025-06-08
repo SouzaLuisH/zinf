@@ -88,7 +88,7 @@ typedef struct
 
 // --------------- FUNCTION HEADERS --------//
 void game_loop(char move);
-int init_game_data();
+int init_game_data(char stage_no);
 int finish_game();
 
 #endif

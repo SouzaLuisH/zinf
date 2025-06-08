@@ -104,7 +104,7 @@ int main()
 	SetExitKey(0);
 	srand(32);
 	// SearchAndSetResourceDir("resources");
-	init_game_data();
+	init_game_data('3');
 	while (!WindowShouldClose())
 	{
 		BeginDrawing();

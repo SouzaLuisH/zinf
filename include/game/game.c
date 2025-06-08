@@ -4,11 +4,13 @@
 #include "graphic.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 Player Link;
 Game_State Map_Data;
 
 // ----------------- TEMPORARIO ----------------//
+/* 
 char archive[16][24] = {
     "     M        PPPP      ",
     "              M P       ",
@@ -27,6 +29,31 @@ char archive[16][24] = {
     "                       V",
     "                        ",
 };
+*/
+
+char proto_mapa (char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
+{
+    int i=0, j=0;
+    FILE *arq_map=fopen(arq_nome, "r");
+    if (arq_map==NULL){
+        printf("ERRO! O mapa está com algum problema.");
+        return 0;
+    }
+    
+    for(i=0;i<MAP_HEIGHT;i++){
+        while(j<MAP_WIDTH){
+            char cont=fgetc(arq_map);
+
+            if (cont !='\r' && cont !='\n' && cont != '\0'){
+                map[i][j]=cont;
+                j++;
+            }
+        }
+        j=0;
+    }
+        
+
+}
 
 int get_color_for_map_char(char c)
 {
@@ -334,13 +361,22 @@ void handle_player_monster_interation(Player *player, Game_State *map)
 
 //------------------------------------//
 
-int init_game_data()
+int init_game_data(char stage_no)
 {
     // TODO read map file, to set the positions of the enemies and player
     // TODO save map in matrix
+    char arq_path[100]={0};
+    sprintf(arq_path, "../../include/game/mapa_%c.txt", stage_no);
+    char archive[MAP_HEIGHT][MAP_WIDTH];
+
+    
+    printf("============\n %s \n ============", arq_path);
+    proto_mapa(archive, arq_path);
     player_init_status(&Link);
     get_player_initial_position(&Link, archive, MAP_HEIGHT, MAP_WIDTH);
     get_initial_position_of_all_elements(&Map_Data, archive, MAP_WIDTH, MAP_HEIGHT);
+
+
     if (DEBUG_PRINTS)
     {
         printf("\nMonstros: %d, Vidas: %d, Armas: %d, Paredes: %d\n",
@@ -348,6 +384,7 @@ int init_game_data()
     }
     return 1;
 }
+
 
 void game_loop(char move)
 {
