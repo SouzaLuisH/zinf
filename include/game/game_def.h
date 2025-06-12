@@ -7,10 +7,10 @@
 #define DEBUG_PRINTS true
 
 //----- GAME DEFINES ----//
-#define DEFAULT_PLAYER_VELOCITY 150 // pixels per frame
+#define DEFAULT_PLAYER_VELOCITY 40 // pixels per frame
 #define MAX_ENEMIES_PER_LEVEL 5
-#define TILE_SIZE 50.0f
-#define PLAYER_HITBOX_SIZE 40.0f
+#define TILE_SIZE 55.0f
+#define PLAYER_HITBOX_SIZE 50.0f
 
 //----- MAP DEFINES ----//
 #define MAP_BLANC_SPACE ' '
@@ -22,7 +22,6 @@
 
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 16
-#define ITEM_SIZE 50
 
 //TODO move colors to graphic.h
 #define MAP_COLOR_EMPTY 2   // BLACK
@@ -90,7 +89,7 @@ typedef struct
 
 // --------------- FUNCTION HEADERS --------//
 void game_loop();
-int init_game_data(char stage_no, bool keep_weapon);
+int init_game_data(int stage_no, bool keep_weapon);
 int finish_game();
 
 #endif
