@@ -2,12 +2,12 @@
 #include "keyboard.h"
 #include "raylib.h"
 
-void read_keyboard(unsigned char *key)
+void read_keyboard(unsigned char *key, bool game_mode)
 {
-	*key = driver_keyboard();
+	*key = driver_keyboard(game_mode);
 }
 
-unsigned char driver_keyboard()
+unsigned char driver_keyboard(bool game_mode)
 {
 	static float key_repeat_timer = 0.0f;
 	static bool is_key_pressed[N_KEYS_MAPPED] = {false}; // Para 6 teclas monitoradas
@@ -31,6 +31,26 @@ unsigned char driver_keyboard()
 		{KEY_J, 'j'},
 		{KEY_UP, 'w'},
 	};
+	
+	if (game_mode)
+	{
+
+		while (i < sizeof(keys) / sizeof(keys[0]))
+		{
+			if (IsKeyDown(keys[i].key))
+			{
+				command = keys[i].command;
+				i = sizeof(keys) / sizeof(keys[0]); // para sair do loop
+			}
+			else{
+				command = '#';
+			}
+
+			i++;
+		}
+		return command;
+	}
+
 
 	while (i < sizeof(keys) / sizeof(keys[0]))
 	{
@@ -49,7 +69,9 @@ unsigned char driver_keyboard()
 				command = keys[i].command;
 				key_repeat_timer = repeat_rate;
 				i = sizeof(keys) / sizeof(keys[0]); // para sair do loop
-			}else{
+			}
+			else
+			{
 				command = '\0';
 			}
 		}

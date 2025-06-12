@@ -1,10 +1,13 @@
 #include "player.h"
 #include "graphic.h"
+#include <raylib.h>
 
 // Set Player Status to initial state
-int player_init_status(Player *player)
+int player_init_status(Player *player, bool keep_weapon)
 {
-    player->hasWeapon = false;
+    if(keep_weapon ==false){
+        player->hasWeapon = false;
+    }
     player->isWeaponActive = false;
     player->lives = 3;
     player->orientation = SOUTH;
@@ -21,8 +24,8 @@ int move_player(Player *player, unsigned char pressed_key)
                                                                   : 0;
     float move_y = pressed_key == 'w' ? -1.00 : pressed_key == 's' ? 1.00
                                                                    : 0;
-    player->position.x += move_x * DEFAULT_PLAYER_VELOCITY;
-    player->position.y += move_y * DEFAULT_PLAYER_VELOCITY;
+    player->position.x += move_x * DEFAULT_PLAYER_VELOCITY*get_frame_time();
+    player->position.y += move_y * DEFAULT_PLAYER_VELOCITY*get_frame_time();
 
     return 1;
 }

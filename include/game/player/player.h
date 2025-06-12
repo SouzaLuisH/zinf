@@ -3,7 +3,8 @@
 
 #include "game_def.h"
 
-int player_init_status(Player* player);
+int player_init_status(Player *player, bool keep_weapon);
+
 
 // movimentation
 int player_movimentation(Player *player,unsigned char pressed_key);

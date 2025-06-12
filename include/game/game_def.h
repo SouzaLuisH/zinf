@@ -2,12 +2,15 @@
 #define GAME_DEF
 #include "stdbool.h"
 
+
 //----- DEBUG ------//
 #define DEBUG_PRINTS true
 
 //----- GAME DEFINES ----//
-#define DEFAULT_PLAYER_VELOCITY 50 // pixels per frame
+#define DEFAULT_PLAYER_VELOCITY 150 // pixels per frame
 #define MAX_ENEMIES_PER_LEVEL 5
+#define TILE_SIZE 50.0f
+#define PLAYER_HITBOX_SIZE 40.0f
 
 //----- MAP DEFINES ----//
 #define MAP_BLANC_SPACE ' '
@@ -28,7 +31,6 @@
 #define MAP_COLOR_LIFE 3    // RED
 #define MAP_COLOR_WALL 0    // WHITE
 #define MAP_COLOR_UNKNOWN -1
-
 
 
 //---- GAME STRUTURES ----///
@@ -87,8 +89,8 @@ typedef struct
 } Game_State;
 
 // --------------- FUNCTION HEADERS --------//
-void game_loop(char move);
-int init_game_data(char stage_no);
+void game_loop();
+int init_game_data(char stage_no, bool keep_weapon);
 int finish_game();
 
 #endif

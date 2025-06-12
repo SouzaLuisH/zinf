@@ -3,51 +3,50 @@
 #include <stdlib.h>
 #include "raylib.h"
 #include "resource_dir.h" // utility header for SearchAndSetResourceDir
-#include "keyboard.h"
 #include "graphic.h"
-#include <game_def.h>
+#include "game_def.h"
+#include "keyboard.h"
 
 #define WINDOW_WIDHT 1200
 #define WINDOW_HEIGHT 800
 
-//------------------------ Global Var--------------------------------//
-enum game_mode_options
-{
-	in_game = 0,
-	ranking_menu,
-	main_menu,
-	quit
-};
 
-unsigned char global_press_key = 0;
-enum game_mode_options global_game_screen = main_menu;
+//------------------------ Global Var--------------------------------//
+
+typedef enum game_mode_options
+	{
+		in_game = 0,
+		ranking_menu,
+		main_menu,
+		quit
+	} GameMode;
 
 //------------------------ Menu Functions--------------------------------//
 
-int main_menu_f()
+int main_menu_f(unsigned char menu_key, enum game_mode_options *game_mode)
 {
 	static int menu_index = 1;
 
-	if (global_press_key == 's' && (menu_index) < 3)
+	if (menu_key == 's' && (menu_index) < 3)
 	{
 		menu_index = menu_index + 1;
 	}
-	else if (global_press_key == 'w' && (menu_index > 1))
+	else if (menu_key == 'w' && (menu_index > 1))
 	{
 		menu_index = menu_index - 1;
 	}
-	else if (global_press_key == '\n')
+	else if (menu_key == '\n')
 	{
 		switch (menu_index)
 		{
 		case 1:
-			global_game_screen = in_game;
+			*game_mode = in_game;
 			break;
 		case 2:
-			global_game_screen = ranking_menu;
+			*game_mode = ranking_menu;
 			break;
 		case 3:
-			global_game_screen = quit;
+			*game_mode = quit;
 			break;
 		}
 		menu_index = 1;
@@ -64,7 +63,7 @@ int main_menu_f()
 
 //-------------------------- Game Function -------------------------------//
 
-void in_game_f()
+void in_game_f(unsigned char menu_key,enum game_mode_options *game_mode)
 {
 	static bool is_paused = false;
 
@@ -75,50 +74,59 @@ void in_game_f()
 		driver_print_text("-> A tecla Enter para voltar ao menu", 80, WINDOW_HEIGHT / 2 + 120, 0);
 		driver_print_text("-> A tecla W para retomar ", 80, WINDOW_HEIGHT / 2 + 160, 0);
 
-		if (global_press_key == '\n')
+		if (menu_key == '\n')
 		{
 			is_paused = false;
-			global_game_screen = main_menu;
+			*game_mode = main_menu;
 		}
-		else if (global_press_key == 'w')
+		else if (menu_key == 'w')
 		{
 			is_paused = false;
 		}
 	}
 	else
 	{
-		if (global_press_key == 'p')
+		if (menu_key == 'p')
 		{
 			is_paused = true;
 		}
 
-		game_loop(global_press_key);
+		game_loop();
 		driver_print_text("-> [P]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
 	}
 }
 
 int main()
 {
+
+	GameMode game_screen = main_menu;
+	unsigned char menu_key_press = 0;
+
+
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 	InitWindow(WINDOW_WIDHT, WINDOW_HEIGHT, "ZINF");
 	SetExitKey(0);
+
+	
 	srand(32);
 	// SearchAndSetResourceDir("resources");
-	init_game_data('3');
+	init_game_data('1', false);
+
+
 	while (!WindowShouldClose())
 	{
 		BeginDrawing();
 		ClearBackground(BLACK);
-		read_keyboard(&global_press_key);
+		read_keyboard(&menu_key_press, false);
 
-		switch (global_game_screen)
+		switch (game_screen)
 		{
 		case main_menu:
-			main_menu_f();
+			main_menu_f(menu_key_press,&game_screen);
 			break;
 
 		case in_game:
-			in_game_f();
+			in_game_f(menu_key_press,&game_screen);
 			break;
 			// case ranking
 
@@ -140,7 +148,7 @@ int main()
 
 /*
 	Mapa:
-	 - Leitura de arquivos txt
+	 - Leitura de arquivos txt OK
 	 - criar matriz preenchida a partir deles OK
 	 - criar estrutura para os elementos iniciais do jogo OK
 	 - Plotar o mapa OK
@@ -173,7 +181,7 @@ int main()
 			* ataque com espada
 		- Pontuação OK
 		- Vidas perder/ganhar OK
-		- Passar de fase
+		- Passar de fase OK
 	Driver:
 		- Leitura do Teclado  OK
 		- Desenho do mapa  OK
