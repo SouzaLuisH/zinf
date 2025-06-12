@@ -10,32 +10,31 @@
 #define WINDOW_WIDHT 1200
 #define WINDOW_HEIGHT 800
 
-
 //------------------------ Global Var--------------------------------//
 
 typedef enum game_mode_options
-	{
-		in_game = 0,
-		ranking_menu,
-		main_menu,
-		quit
-	} GameMode;
+{
+	in_game = 0,
+	ranking_menu,
+	main_menu,
+	quit
+} GameMode;
 
 //------------------------ Menu Functions--------------------------------//
 
-int main_menu_f(unsigned char menu_key, enum game_mode_options *game_mode)
+int main_menu_f(uint8_t menu_key, enum game_mode_options *game_mode)
 {
 	static int menu_index = 1;
 
-	if (menu_key == 's' && (menu_index) < 3)
+	if (menu_key & KEY_BIT_S && (menu_index) < 3)
 	{
 		menu_index = menu_index + 1;
 	}
-	else if (menu_key == 'w' && (menu_index > 1))
+	else if (menu_key & KEY_BIT_W && (menu_index > 1))
 	{
 		menu_index = menu_index - 1;
 	}
-	else if (menu_key == '\n')
+	else if (menu_key & KEY_BIT_ENTER)
 	{
 		switch (menu_index)
 		{
@@ -63,7 +62,7 @@ int main_menu_f(unsigned char menu_key, enum game_mode_options *game_mode)
 
 //-------------------------- Game Function -------------------------------//
 
-void in_game_f(unsigned char menu_key,enum game_mode_options *game_mode)
+void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 {
 	static bool is_paused = false;
 
@@ -74,19 +73,19 @@ void in_game_f(unsigned char menu_key,enum game_mode_options *game_mode)
 		driver_print_text("-> A tecla Enter para voltar ao menu", 80, WINDOW_HEIGHT / 2 + 120, 0);
 		driver_print_text("-> A tecla W para retomar ", 80, WINDOW_HEIGHT / 2 + 160, 0);
 
-		if (menu_key == '\n')
+		if (menu_key & KEY_BIT_ENTER)
 		{
 			is_paused = false;
 			*game_mode = main_menu;
 		}
-		else if (menu_key == 'w')
+		else if (menu_key & KEY_BIT_W)
 		{
 			is_paused = false;
 		}
 	}
 	else
 	{
-		if (menu_key == 'p')
+		if (menu_key & KEY_BIT_P)
 		{
 			is_paused = true;
 		}
@@ -100,18 +99,15 @@ int main()
 {
 
 	GameMode game_screen = main_menu;
-	unsigned char menu_key_press = 0;
-
+	uint8_t menu_key_press = 0;
 
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 	InitWindow(WINDOW_WIDHT, WINDOW_HEIGHT, "ZINF");
 	SetExitKey(0);
 
-	
 	srand(32);
 	// SearchAndSetResourceDir("resources");
-	init_game_data('1', false);
-
+	init_game_data(1, false);
 
 	while (!WindowShouldClose())
 	{
@@ -122,11 +118,11 @@ int main()
 		switch (game_screen)
 		{
 		case main_menu:
-			main_menu_f(menu_key_press,&game_screen);
+			main_menu_f(menu_key_press, &game_screen);
 			break;
 
 		case in_game:
-			in_game_f(menu_key_press,&game_screen);
+			in_game_f(menu_key_press, &game_screen);
 			break;
 			// case ranking
 
