@@ -2,61 +2,56 @@
 #include "keyboard.h"
 #include "raylib.h"
 
-void read_keyboard(unsigned char *key, bool game_mode)
+void read_keyboard(uint8_t *pressed_keys, bool game_mode)
 {
-	*key = driver_keyboard(game_mode);
+	*pressed_keys = driver_keyboard(game_mode);
 }
 
-unsigned char driver_keyboard(bool game_mode)
+uint8_t driver_keyboard(bool game_mode)
 {
 	static float key_repeat_timer = 0.0f;
 	static bool is_key_pressed[N_KEYS_MAPPED] = {false}; // Para 6 teclas monitoradas
 
 	float delay_to_start_repeat = 0.4f;
 	float repeat_rate = 0.1f;
-
-	unsigned char command = '#';
 	int i = 0;
+	uint8_t command_mask = 0x00;
 	struct
 	{
 		int key;
-		unsigned char command;
+		uint8_t bit;
 	} keys[N_KEYS_MAPPED] = {
-		{KEY_W, 'w'},
-		{KEY_A, 'a'},
-		{KEY_S, 's'},
-		{KEY_D, 'd'},
-		{KEY_ENTER, '\n'},
-		{KEY_P, 'p'},
-		{KEY_J, 'j'},
-		{KEY_UP, 'w'},
+		{KEY_W, KEY_BIT_W},
+		{KEY_UP, KEY_BIT_UP},
+		{KEY_A, KEY_BIT_A},
+		{KEY_LEFT, KEY_BIT_LEFT},
+		{KEY_S, KEY_BIT_S},
+		{KEY_DOWN, KEY_BIT_DOWN},
+		{KEY_D, KEY_BIT_D},
+		{KEY_RIGHT, KEY_BIT_RIGHT},
+		{KEY_ENTER, KEY_BIT_ENTER},
+		{KEY_P, KEY_BIT_P},
+		{KEY_J, KEY_BIT_J},
+
 	};
-	
+
 	if (game_mode)
 	{
-
-		while (i < sizeof(keys) / sizeof(keys[0]))
+		for (i = 0; i < N_KEYS_MAPPED; i++)
 		{
 			if (IsKeyDown(keys[i].key))
 			{
-				command = keys[i].command;
-				i = sizeof(keys) / sizeof(keys[0]); // para sair do loop
+				command_mask |= keys[i].bit;
 			}
-			else{
-				command = '#';
-			}
-
-			i++;
 		}
-		return command;
+		return command_mask;
 	}
-
 
 	while (i < sizeof(keys) / sizeof(keys[0]))
 	{
 		if (IsKeyPressed(keys[i].key))
 		{
-			command = keys[i].command;
+			command_mask = keys[i].bit;
 			key_repeat_timer = delay_to_start_repeat;
 			is_key_pressed[i] = true;
 			i = sizeof(keys) / sizeof(keys[0]); // para sair do loop
@@ -66,13 +61,9 @@ unsigned char driver_keyboard(bool game_mode)
 			key_repeat_timer -= GetFrameTime();
 			if (key_repeat_timer <= 0.0f)
 			{
-				command = keys[i].command;
+				command_mask = keys[i].bit;
 				key_repeat_timer = repeat_rate;
 				i = sizeof(keys) / sizeof(keys[0]); // para sair do loop
-			}
-			else
-			{
-				command = '\0';
 			}
 		}
 		else
@@ -82,5 +73,5 @@ unsigned char driver_keyboard(bool game_mode)
 		i++;
 	}
 
-	return command;
+	return command_mask;
 };
