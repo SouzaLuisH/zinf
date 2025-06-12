@@ -25,8 +25,8 @@ void fill_monster_init_data(Enemies *monsters, char map[][MAP_WIDTH], int width,
             if (map[i][j] == target_char)
             {
                 monster_init_status(&monsters[index]);
-                monsters[index].position.x = j * ITEM_SIZE;
-                monsters[index].position.y = i * ITEM_SIZE;
+                monsters[index].position.x = j * TILE_SIZE;
+                monsters[index].position.y = i * TILE_SIZE;
                 index++;
             }
         }

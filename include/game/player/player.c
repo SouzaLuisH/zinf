@@ -1,6 +1,5 @@
 #include "player.h"
 #include "graphic.h"
-#include <raylib.h>
 
 // Set Player Status to initial state
 int player_init_status(Player *player, bool keep_weapon)
@@ -18,15 +17,9 @@ int player_init_status(Player *player, bool keep_weapon)
     return 1;
 }
 
-int move_player(Player *player, unsigned char pressed_key)
+int move_player(Player *player,Vector2D* new_position)
 {
-    float move_x = pressed_key == 'd' ? 1.00 : pressed_key == 'a' ? -1.00
-                                                                  : 0;
-    float move_y = pressed_key == 'w' ? -1.00 : pressed_key == 's' ? 1.00
-                                                                   : 0;
-    player->position.x += move_x * DEFAULT_PLAYER_VELOCITY*get_frame_time();
-    player->position.y += move_y * DEFAULT_PLAYER_VELOCITY*get_frame_time();
-
+    player->position = *new_position;
     return 1;
 }
 
@@ -61,8 +54,8 @@ void get_player_initial_position(Player *player, char map[][24], int width, int 
         {
             if (map[i][j] == MAP_PLAYER_SPACE)
             {
-                player->position.x = j * ITEM_SIZE;
-                player->position.y = i * ITEM_SIZE;
+                player->position.x = j * TILE_SIZE;
+                player->position.y = i * TILE_SIZE;
             }
         }
     }
@@ -80,7 +73,7 @@ bool is_player_weapon_active(Player *player)
     return player->isWeaponActive;
 }
 
-bool handle_player_weapon(Player *player, unsigned char pressed_key)
+bool handle_player_weapon(Player *player, bool pressed_key)
 {
 
     // BUG: when player press 'J' and after only move the aswd keys, the weapon still be activated
@@ -90,11 +83,11 @@ bool handle_player_weapon(Player *player, unsigned char pressed_key)
         return false; // player do not have weapon
     }
 
-    if (pressed_key == 'j')
+    if (pressed_key)
     {
         player->isWeaponActive = true;
     }
-    else if (pressed_key == '#') // no key is pressed
+    else if (!pressed_key) // no key is pressed
     {
         player->isWeaponActive = false;
     }
@@ -143,18 +136,18 @@ void draw_player(Player *player)
         if (is_player_weapon_active(player))
         {
             // draw player with weapon active TODO use orientation to draw the player
-            driver_draw_square(x_coord, y_coord, 50, 7); // violet
+            driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 7); // violet
         }
         else
         {
             // draw player with weapon stand-by TODO use orientation to draw the player
-            driver_draw_square(x_coord, y_coord, 50, 6); // purple
+            driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 6); // purple
         }
     }
     else
     {
         // draw player without wearpon TODO use orientation to draw the player
-        driver_draw_square(x_coord, y_coord, 50, 4); // green
+        driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 4); // green
         // driver_print_text("Without Weapon ", x_coord, y_coord, 0);
     }
 }
