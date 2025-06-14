@@ -65,7 +65,7 @@ int main_menu_f(uint8_t menu_key, enum game_mode_options *game_mode)
 void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 {
 	static bool is_paused = false;
-	static bool is_new_game = true; 
+	static bool is_new_game = true;
 
 	int is_finish_of_game = 0;
 
@@ -97,7 +97,8 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 		is_finish_of_game = game_loop(is_new_game);
 		is_new_game = false;
 
-		if(is_finish_of_game){
+		if (is_finish_of_game)
+		{
 			is_new_game = true;
 			*game_mode = main_menu;
 		}
@@ -143,11 +144,13 @@ int main()
 		default:
 			break;
 		}
-
-		EndDrawing();
+		
+		if (!WindowShouldClose())
+		{
+			EndDrawing();
+		}
 	}
 
-	CloseWindow();
 	return 0;
 }
 
