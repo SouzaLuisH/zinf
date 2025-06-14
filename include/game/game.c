@@ -12,7 +12,7 @@
 
 // ----------------- TEMPORARIO ----------------//
 
-bool proto_mapa(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
+bool read_map_archive(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
 {
     int i = 0, j = 0;
     FILE *arq_map = fopen(arq_nome, "r");
@@ -143,11 +143,11 @@ void get_initial_position_of_all_elements(Game_State *map, char map_char[][MAP_W
                 map->n_weapons++;
         }
     }
-    // malloc the elements
-    map->lives = (Element *)malloc(sizeof(Element) * map->n_lives);
-    map->weapons = (Element *)malloc(sizeof(Element) * map->n_weapons);
-    map->monsters = (Enemies *)malloc(sizeof(Enemies) * map->n_monsters);
-    map->walls = (Vector2D *)malloc(sizeof(Vector2D) * map->n_walls);
+    // calloc the elements
+    map->lives = (Element *)calloc(sizeof(Element) * map->n_lives);
+    map->weapons = (Element *)calloc(sizeof(Element) * map->n_weapons);
+    map->monsters = (Enemies *)calloc(sizeof(Enemies) * map->n_monsters);
+    map->walls = (Vector2D *)calloc(sizeof(Vector2D) * map->n_walls);
 
     if (!map->lives || !map->monsters || !map->walls || !map->weapons)
     {
@@ -429,27 +429,28 @@ bool check_user_active_weapon(uint8_t input)
 }
 //--------------------------------------------
 
-int init_game_data(int stage_no, bool keep_weapon, Player *player, Game_State *Map_Data)
+int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_State *Map_Data)
 {
     char arq_path[50] = {0};
     bool is_map_not_read = 0;
+    char map_matrix[MAP_HEIGHT][MAP_WIDTH];
+
     sprintf(arq_path,MAP_PATH_PREFIX "%d.txt", stage_no);
-    char archive[MAP_HEIGHT][MAP_WIDTH];
 
     if (DEBUG_PRINTS)
     {
         printf("============\n Map Path: %s \n ============", arq_path);
     }
-    is_map_not_read = proto_mapa(archive, arq_path);
 
+    is_map_not_read = read_map_archive(map_matrix, arq_path);
     if (is_map_not_read)
     {
         return 1;
     }
 
-    player_init_status(player, keep_weapon);
-    get_player_initial_position(player, archive, MAP_HEIGHT, MAP_WIDTH);
-    get_initial_position_of_all_elements(Map_Data, archive, MAP_WIDTH, MAP_HEIGHT);
+    player_init_status(player, keep_player_status);
+    get_player_initial_position(player, map_matrix, MAP_HEIGHT, MAP_WIDTH);
+    get_initial_position_of_all_elements(Map_Data, map_matrix, MAP_WIDTH, MAP_HEIGHT);
 
     if (DEBUG_PRINTS)
     {
