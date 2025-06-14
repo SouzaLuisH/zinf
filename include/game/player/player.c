@@ -2,22 +2,23 @@
 #include "graphic.h"
 
 // Set Player Status to initial state
-int player_init_status(Player *player, bool keep_weapon)
+int player_init_status(Player *player, bool keep_player_status)
 {
-    if(keep_weapon ==false){
-        player->hasWeapon = false;
-    }
     player->isWeaponActive = false;
-    player->lives = 3;
     player->orientation = SOUTH;
-    player->score = 0;
     player->position.x = 0;
     player->position.y = 0;
 
+    if (keep_player_status == false)
+    {
+        player->hasWeapon = false;
+        player->score = 0;
+        player->lives = 3;
+    }
     return 1;
 }
 
-int move_player(Player *player,Vector2D* new_position)
+int move_player(Player *player, Vector2D *new_position)
 {
     player->position = *new_position;
     return 1;
