@@ -360,8 +360,8 @@ void handle_weapon_elements(Player *player, Game_State *map)
 void handle_player_movement(Player *player, Game_State *map, uint8_t key_pressed)
 {
 
-    float x_component = 0.00;
-    float y_component = 0.00;
+    float x_component = 0.0f;
+    float y_component = 0.0f;
 
     if ((key_pressed & KEY_BIT_W) || (key_pressed & KEY_BIT_UP))
     {
@@ -384,7 +384,18 @@ void handle_player_movement(Player *player, Game_State *map, uint8_t key_pressed
     if (x_component == 0 && y_component == 0)
         return;
 
-    // TO DO, normalize vector if player is moving in diagonal
+
+    // normalize the vector if player moves in diagonal
+    if (x_component != 0 && y_component != 0)
+    {   /* 
+          The x and y components are unitary lenght, 
+          So to normilize we just need divide the components by square root of 2.
+        */
+        x_component /=ROOT_SQUARE_OF_2; // normalize x-axis
+        y_component /=ROOT_SQUARE_OF_2; // normalize y-axis
+    }
+
+    
     Vector2D new_player_pos = {player->position.x + x_component * DEFAULT_PLAYER_VELOCITY * get_frame_time(),
                                player->position.y + y_component * DEFAULT_PLAYER_VELOCITY * get_frame_time()};
 
@@ -468,7 +479,7 @@ int game_loop(bool is_a_new_game)
     static Game_State Map_Data;
 
     // -- game aux vars
-    static int stage_conter = 1;
+    static int stage_conter = 1; // TODO set stage_counter inside da game_state struct, to save in a bin later
     static bool is_first_stage = true;
     int finish_of_game = 0;
     uint8_t keys_read = 0;

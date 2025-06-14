@@ -15,6 +15,7 @@
 #define MAX_ENEMIES_PER_LEVEL 5
 #define TILE_SIZE 60.0f
 #define PLAYER_HITBOX_SIZE 50.0f
+#define ROOT_SQUARE_OF_2 1.4142135f
 
 //----- MAP DEFINES ----//
 #define MAP_BLANC_SPACE ' '
