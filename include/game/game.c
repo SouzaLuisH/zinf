@@ -384,18 +384,16 @@ void handle_player_movement(Player *player, Game_State *map, uint8_t key_pressed
     if (x_component == 0 && y_component == 0)
         return;
 
-
     // normalize the vector if player moves in diagonal
     if (x_component != 0 && y_component != 0)
-    {   /* 
-          The x and y components are unitary lenght, 
-          So to normilize we just need divide the components by square root of 2.
-        */
-        x_component /=ROOT_SQUARE_OF_2; // normalize x-axis
-        y_component /=ROOT_SQUARE_OF_2; // normalize y-axis
+    {                                    /*
+                                           The x and y components are unitary lenght,
+                                           So to normilize we just need divide the components by square root of 2.
+                                         */
+        x_component /= ROOT_SQUARE_OF_2; // normalize x-axis
+        y_component /= ROOT_SQUARE_OF_2; // normalize y-axis
     }
 
-    
     Vector2D new_player_pos = {player->position.x + x_component * DEFAULT_PLAYER_VELOCITY * get_frame_time(),
                                player->position.y + y_component * DEFAULT_PLAYER_VELOCITY * get_frame_time()};
 
@@ -424,8 +422,8 @@ void handle_player_monster_interation(Player *player, Game_State *map)
                 // TODO levar dano mas ficar 1 tempo invuneravel para nao levar danos infinitos
                 // talvez flag na struct para piscar na tela;
                 // player->lives -= 1;
-                Vector2D new_position = {player->position.x - 10, player->position.y + 10};
-                move_player(player, &new_position);
+                // Vector2D new_position = {player->position.x - 10, player->position.y + 10};
+                // move_player(player, &new_position);
             }
 
             if (DEBUG_PRINTS)
@@ -435,6 +433,52 @@ void handle_player_monster_interation(Player *player, Game_State *map)
                 printf("\nPLAYER LIVES: %d", player->lives);
                 printf("\nPLAYER SCORE: %d\n\n", player->score);
             }
+        }
+    }
+}
+
+void handle_monster_movement(Game_State *map_data)
+{
+
+    static float delta_time_to_change_orientation[20] = {0}; // TODO create a var inside the monster struct insted use this array;
+
+    for (int i = 0; i < map_data->n_monsters; i++)
+    {
+        Enemies *monster = &map_data->monsters[i];
+        delta_time_to_change_orientation[i] -= get_frame_time();
+        Vector2D new_position = {0, 0};
+
+        if (delta_time_to_change_orientation[i] <= 0)
+        {
+            monster->orientation = (Orientation)(int)(rand() % 4);
+            delta_time_to_change_orientation[i] = 0.5f + ((float)rand() / RAND_MAX) * 2.0f; //random time to change orientaton
+        }
+
+        switch (monster->orientation)
+        {
+        case NORTH:
+            new_position.y = -DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            break;
+        case SOUTH:
+            new_position.y = DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            break;
+        case WEST:
+            new_position.x = -DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            break;
+        case EAST:
+            new_position.x = DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            break;
+        }
+        new_position.x += monster->position.x;
+        new_position.y += monster->position.y;
+
+        if (check_wall_colision(new_position, map_data) == false)
+        {
+            monster->position = new_position;
+        }
+        else
+        {
+            delta_time_to_change_orientation[i] = 0;
         }
     }
 }
@@ -519,6 +563,7 @@ int game_loop(bool is_a_new_game)
     handle_extra_lifes(&Link, &Map_Data);
     handle_weapon_elements(&Link, &Map_Data);
     handle_player_weapon(&Link, check_user_active_weapon(keys_read));
+    handle_monster_movement(&Map_Data);
     handle_player_monster_interation(&Link, &Map_Data);
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
