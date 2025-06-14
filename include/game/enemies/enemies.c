@@ -2,14 +2,15 @@
 #include "graphic.h"
 #include "stdlib.h"
 
-int monster_init_status(Enemies *Monster)
+int monster_init_status(Enemies *monster)
 {
-    Monster->lives = 1;
-    Monster->orientation = SOUTH;                           // TODO random orientation
-    Monster->position.x =0; // TODO get position from text map
-    Monster->position.y = 0; // TODO get position from text map
-    Monster->reward = 99*((float)rand()/RAND_MAX); +1;// TODO random reward
-    Monster->isEnable = true;
+    monster->lives = 1;
+    monster->orientation = SOUTH;                          
+    monster->position.x =0;
+    monster->position.y = 0; 
+    monster->reward = 99*((float)rand()/RAND_MAX); +1;
+    monster->isEnable = true;
+    monster->last_change_time =0;
     return 1;
 }
 

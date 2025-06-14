@@ -17,6 +17,7 @@
 #define TILE_SIZE 60.0f
 #define PLAYER_HITBOX_SIZE 50.0f
 #define WEAPON_N_OF_TILES 2
+#define TIME_PLAYER_INTOCHABLE_AFTER_DAMAGE 1.5f
 
 //----- MATH DEFINES ----//
 #define ROOT_SQUARE_OF_2 1.4142135f
@@ -64,6 +65,7 @@ typedef struct
     int lives;
     bool hasWeapon;
     bool isWeaponActive;
+    float last_damage_time;
     // warpon type
 } Player;
 
@@ -74,6 +76,7 @@ typedef struct
     int lives;
     int reward;
     bool isEnable;
+    float last_change_time;
 } Enemies;
 
 typedef struct 
@@ -91,9 +94,9 @@ typedef struct
     int n_monsters;
     Enemies *monsters;
     int n_lives;
-    Element *lives; // TODO create a struct to flag if is_enable
+    Element *lives;
     int n_weapons;
-    Element *weapons;// TODO create a struct to flag if is_enable
+    Element *weapons;
 } Game_State;
 
 // --------------- FUNCTION HEADERS --------//

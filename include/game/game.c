@@ -458,6 +458,27 @@ void handle_player_movement(Player *player, Game_State *map, uint8_t key_pressed
     }
 }
 
+void handle_player_damage(Player *player, int value_of_damage)
+{
+
+    if (player->last_damage_time == 0)
+    {
+        player->lives -= value_of_damage;
+        player->last_damage_time = TIME_PLAYER_INTOCHABLE_AFTER_DAMAGE;
+    }
+}
+
+void handle_counter_times(Player *player)
+{
+    if (player->last_damage_time > 0.0f)
+    {
+        player->last_damage_time -= get_frame_time();
+        if (player->last_damage_time < 0.0f)
+        {
+            player->last_damage_time = 0.0f;
+        }
+    }
+}
 void handle_player_monster_interation(Player *player, Game_State *map)
 {
 
@@ -465,14 +486,13 @@ void handle_player_monster_interation(Player *player, Game_State *map)
     {
         Enemies *monster = &map->monsters[i];
 
-        if (check_monster_player_colision(player->position, monster->position))
+        if (monster->isEnable && check_monster_player_colision(player->position, monster->position))
         {
-            player->lives -= 1;
-            // turn player intochable per some time
+            handle_player_damage(player, 1);
             
         }
 
-        if (check_monster_weapon_colision(player, monster->position))
+        if (monster->isEnable && check_monster_weapon_colision(player, monster->position))
         {
             monster->isEnable = false;
             player->score += monster->reward;
@@ -483,18 +503,16 @@ void handle_player_monster_interation(Player *player, Game_State *map)
 void handle_monster_movement(Game_State *map_data)
 {
 
-    static float delta_time_to_change_orientation[20] = {0}; // TODO create a var inside the monster struct insted use this array;
-
     for (int i = 0; i < map_data->n_monsters; i++)
     {
         Enemies *monster = &map_data->monsters[i];
-        delta_time_to_change_orientation[i] -= get_frame_time();
+        monster->last_change_time -= get_frame_time();
         Vector2D new_position = {0, 0};
 
-        if (delta_time_to_change_orientation[i] <= 0)
+        if (monster->last_change_time <= 0)
         {
             monster->orientation = (Orientation)(int)(rand() % 4);
-            delta_time_to_change_orientation[i] = 0.5f + ((float)rand() / RAND_MAX) * 2.0f; // random time to change orientaton
+            monster->last_change_time = 0.5f + ((float)rand() / RAND_MAX) * 2.0f; // random time to change orientaton
         }
 
         switch (monster->orientation)
@@ -521,7 +539,7 @@ void handle_monster_movement(Game_State *map_data)
         }
         else
         {
-            delta_time_to_change_orientation[i] = 0;
+            monster->last_change_time = 0;
         }
     }
 }
@@ -600,7 +618,7 @@ int game_loop(bool is_a_new_game)
         }
     }
 
-    //--- calling game funcions
+    //--- calling game functions
     read_keyboard(&keys_read, true);
     handle_player_movement(&Link, &Map_Data, keys_read);
     handle_extra_lifes(&Link, &Map_Data);
@@ -610,6 +628,11 @@ int game_loop(bool is_a_new_game)
         handle_monster_movement(&Map_Data);
     }
     handle_player_monster_interation(&Link, &Map_Data);
+
+    //--- calling timer manager funtions
+    handle_counter_times(&Link);
+
+    //--- calling draw functions
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
     return 0;

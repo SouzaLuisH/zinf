@@ -1,6 +1,6 @@
 #include "player.h"
 #include "graphic.h"
-
+#include <stdio.h>
 // Set Player Status to initial state
 int player_init_status(Player *player, bool keep_player_status)
 {
@@ -8,6 +8,7 @@ int player_init_status(Player *player, bool keep_player_status)
     player->orientation = SOUTH;
     player->position.x = 0;
     player->position.y = 0;
+    player->last_damage_time = 0.0f;
 
     if (keep_player_status == false)
     {
@@ -133,17 +134,34 @@ void draw_player(Player *player)
     Orientation orientation = player->orientation;
     int i = 0;
 
+    static float blink_timer = 0.2f;
+    static bool is_blinking = true;
+
+    if (player->last_damage_time > 0)
+    {
+        blink_timer -= get_frame_time();
+
+        if (blink_timer <= 0.0f)
+        {
+            is_blinking = !is_blinking; // inverte entre true e false
+            blink_timer = 0.2f;         // reinicia para 0.2s em cada estado
+        }
+    }else
+    {
+        is_blinking = true;
+    }
+
     if (player_has_weapon(player) == true)
     {
         if (is_player_weapon_active(player))
         {
-            // draw player with weapon active TODO use orientation to draw the player
+            // draw player body
             driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 7); // violet
 
             for (i = 1; i <= WEAPON_N_OF_TILES; i++)
             {
 
-                switch (player->orientation)
+                switch (player->orientation) // draw player weapon
                 {
                 case NORTH:
                     driver_draw_square(x_coord, (y_coord - PLAYER_HITBOX_SIZE * i), PLAYER_HITBOX_SIZE, 8); // gold
@@ -162,14 +180,14 @@ void draw_player(Player *player)
         }
         else
         {
-            // draw player with weapon stand-by TODO use orientation to draw the player
-            driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 6); // purple
+
+            // draw player body
+            driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, is_blinking ? 6 : 2); // purple
         }
     }
     else
     {
-        // draw player without wearpon TODO use orientation to draw the player
+        // draw player body without wearpon
         driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 4); // green
-        // driver_print_text("Without Weapon ", x_coord, y_coord, 0);
     }
 }
