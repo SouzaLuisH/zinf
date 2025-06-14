@@ -10,7 +10,7 @@
 #define WINDOW_WIDHT 1320
 #define WINDOW_HEIGHT 880
 
-//------------------------ Global Var--------------------------------//
+//------------------------ Global type Var--------------------------------//
 
 typedef enum game_mode_options
 {
@@ -97,7 +97,7 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 		is_new_game = false;
 
 		if(is_finish_of_game){
-			is_new_game = false;
+			is_new_game = true;
 			*game_mode = main_menu;
 		}
 		driver_print_text("-> [P]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
