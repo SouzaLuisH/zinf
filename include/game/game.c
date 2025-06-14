@@ -10,38 +10,7 @@
 
 #include "game_def.h"
 
-// ----------------- TEMPORARIO ----------------//
-
-bool read_map_archive(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
-{
-    int i = 0, j = 0;
-    FILE *arq_map = fopen(arq_nome, "r");
-    if (arq_map == NULL)
-    {
-        if (DEBUG_PRINTS)
-        {
-            printf("ERRO! O mapa está com algum problema.");
-        }
-        return 1;
-    }
-
-    for (i = 0; i < MAP_HEIGHT; i++)
-    {
-        while (j < MAP_WIDTH)
-        {
-            char cont = fgetc(arq_map);
-
-            if (cont != '\r' && cont != '\n' && cont != '\0')
-            {
-                map[i][j] = cont;
-                j++;
-            }
-        }
-        j = 0;
-    }
-    return 0;
-}
-
+// TEMPORARIO
 void draw_map(Game_State *state, int width, int height)
 {
     for (int i = 0; i < state->n_lives; i++)
@@ -76,7 +45,42 @@ void draw_map(Game_State *state, int width, int height)
     }
 }
 
-//------------ INITIAL MAP FUNCITONS ----------------//
+//------- ARCHIVE FUNCTIONS ---------//
+
+int read_map_archive(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
+{
+    int i = 0, j = 0;
+    FILE *arq_map = fopen(arq_nome, "r");
+    if (arq_map == NULL)
+    {
+        if (DEBUG_PRINTS)
+        {
+            printf("ERRO! O mapa está com algum problema.");
+        }
+        return 1;
+    }
+
+    for (i = 0; i < MAP_HEIGHT; i++)
+    {
+        while (j < MAP_WIDTH)
+        {
+            char cont = fgetc(arq_map);
+
+            if (cont != '\r' && cont != '\n' && cont != '\0')
+            {
+                map[i][j] = cont;
+                j++;
+            }
+        }
+        j = 0;
+    }
+    return 0;
+}
+
+//----------------------------------//
+
+//----- INITIAL MAP FUNCITONS -----//
+
 void fill_wall_positions(Vector2D *position, char map[][MAP_WIDTH], int width, int height, char target_char)
 {
     int index = 0;
@@ -113,8 +117,6 @@ void fill_elements_init_data(Element *elements, char map[][MAP_WIDTH], int width
     }
 }
 
-//--------------------------------------------//
-
 void get_initial_position_of_all_elements(Game_State *map, char map_char[][MAP_WIDTH], int width, int height)
 {
     map->n_lives = 0;
@@ -144,10 +146,10 @@ void get_initial_position_of_all_elements(Game_State *map, char map_char[][MAP_W
         }
     }
     // calloc the elements
-    map->lives = (Element *)calloc(sizeof(Element) * map->n_lives);
-    map->weapons = (Element *)calloc(sizeof(Element) * map->n_weapons);
-    map->monsters = (Enemies *)calloc(sizeof(Enemies) * map->n_monsters);
-    map->walls = (Vector2D *)calloc(sizeof(Vector2D) * map->n_walls);
+    map->lives = (Element *)calloc(map->n_lives, sizeof(Element));
+    map->weapons = (Element *)calloc(map->n_weapons, sizeof(Element));
+    map->monsters = (Enemies *)calloc(map->n_monsters, sizeof(Enemies));
+    map->walls = (Vector2D *)calloc(map->n_walls, sizeof(Vector2D));
 
     if (!map->lives || !map->monsters || !map->walls || !map->weapons)
     {
@@ -159,7 +161,6 @@ void get_initial_position_of_all_elements(Game_State *map, char map_char[][MAP_W
     fill_wall_positions(map->walls, map_char, width, height, MAP_WALL_SPACE);
     fill_elements_init_data(map->lives, map_char, width, height, MAP_LIFE_SPACE);
     fill_elements_init_data(map->weapons, map_char, width, height, MAP_WEAPON_SPACE);
-
     fill_monster_init_data(map->monsters, map_char, width, height, MAP_MONSTER_SPACE);
 }
 
@@ -171,7 +172,7 @@ void free_all_elements(Game_State *map)
     free(map->weapons);
 }
 
-//-------- Colision check function------------------------//
+//----- HANDLE CHECK FUNCTIONS -----//
 
 bool check_wall_colision(Vector2D position, Game_State *map)
 {
@@ -300,7 +301,29 @@ bool check_monster_player_colision(Vector2D position, int *monster_position, Gam
     return false;
 }
 
-//----------handle elements functions -----//
+bool check_win_condition(Game_State *map)
+{
+    for (int i = 0; i < map->n_monsters; i++)
+    {
+        if (map->monsters[i].isEnable == true)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool check_user_active_weapon(uint8_t input)
+{
+    if (input & KEY_BIT_J)
+    {
+        return true;
+    }
+    return false;
+}
+//--------------------------------------------
+
+//----- HANDLE ELEMENTS FUNCTIONS -----//
 
 void handle_extra_lifes(Player *player, Game_State *map)
 {
@@ -405,37 +428,15 @@ void handle_player_monster_interation(Player *player, Game_State *map)
     }
 }
 
-//-------handle check function -----//
-
-bool check_win_condition(Game_State *map)
-{
-    for (int i = 0; i < map->n_monsters; i++)
-    {
-        if (map->monsters[i].isEnable == true)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool check_user_active_weapon(uint8_t input)
-{
-    if (input & KEY_BIT_J)
-    {
-        return true;
-    }
-    return false;
-}
-//--------------------------------------------
+//--------------------------------------------//
 
 int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_State *Map_Data)
 {
     char arq_path[50] = {0};
-    bool is_map_not_read = 0;
+    int is_map_not_read = 0;
     char map_matrix[MAP_HEIGHT][MAP_WIDTH];
 
-    sprintf(arq_path,MAP_PATH_PREFIX "%d.txt", stage_no);
+    sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
 
     if (DEBUG_PRINTS)
     {
@@ -496,7 +497,7 @@ int game_loop(bool is_a_new_game)
         free_all_elements(&Map_Data);
         finish_of_game = init_game_data(stage_conter, true, &Link, &Map_Data);
         if (finish_of_game)
-        {
+        { // TODO mensagem of end game loop
             return 1;
         }
     }
