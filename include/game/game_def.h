@@ -3,22 +3,27 @@
 #include "stdbool.h"
 
 
-//----- DEBUG ------//
+//----- DEBUG DEFINES ------//
 #define DEBUG_PRINTS true
+#define ENABLE_MONSTER_MOVE true
 
-//----- ARCHIVE ----//
+//----- ARCHIVE DEFINES ----//
 #define MAP_PATH_PREFIX "../../include/game/maps/mapa_"
 
-
 //----- GAME DEFINES ----//
-#define DEFAULT_PLAYER_VELOCITY 200 // pixels per second
+#define DEFAULT_PLAYER_VELOCITY 320 // pixels per second
 #define DEFALUT_ENEMIES_VELOCITY 300 //pixels per second
 #define MAX_ENEMIES_PER_LEVEL 5
 #define TILE_SIZE 60.0f
 #define PLAYER_HITBOX_SIZE 50.0f
+#define WEAPON_N_OF_TILES 2
+
+//----- MATH DEFINES ----//
 #define ROOT_SQUARE_OF_2 1.4142135f
 
 //----- MAP DEFINES ----//
+#define MAP_WIDTH 24
+#define MAP_HEIGHT 16
 #define MAP_BLANC_SPACE ' '
 #define MAP_PLAYER_SPACE 'J'
 #define MAP_MONSTER_SPACE 'M'
@@ -26,8 +31,6 @@
 #define MAP_LIFE_SPACE 'V'
 #define MAP_WALL_SPACE 'P'
 
-#define MAP_WIDTH 24
-#define MAP_HEIGHT 16
 
 //TODO move colors to graphic.h
 #define MAP_COLOR_EMPTY 2   // BLACK

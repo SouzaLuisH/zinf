@@ -131,6 +131,7 @@ void draw_player(Player *player)
     float x_coord = player->position.x;
     float y_coord = player->position.y;
     Orientation orientation = player->orientation;
+    int i = 0;
 
     if (player_has_weapon(player) == true)
     {
@@ -138,6 +139,26 @@ void draw_player(Player *player)
         {
             // draw player with weapon active TODO use orientation to draw the player
             driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 7); // violet
+
+            for (i = 1; i <= WEAPON_N_OF_TILES; i++)
+            {
+
+                switch (player->orientation)
+                {
+                case NORTH:
+                    driver_draw_square(x_coord, (y_coord - PLAYER_HITBOX_SIZE * i), PLAYER_HITBOX_SIZE, 8); // gold
+                    break;
+                case SOUTH:
+                    driver_draw_square(x_coord, (y_coord + PLAYER_HITBOX_SIZE * i), PLAYER_HITBOX_SIZE, 8); // gold
+                    break;
+                case WEST:
+                    driver_draw_square((x_coord - PLAYER_HITBOX_SIZE * i), y_coord, PLAYER_HITBOX_SIZE, 8); // gold
+                    break;
+                case EAST:
+                    driver_draw_square((x_coord + PLAYER_HITBOX_SIZE * i), y_coord, PLAYER_HITBOX_SIZE, 8); // gold
+                    break;
+                }
+            }
         }
         else
         {
