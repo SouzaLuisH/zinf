@@ -93,5 +93,4 @@ typedef struct
 
 // --------------- FUNCTION HEADERS --------//
 int game_loop(bool is_a_new_game);
-int init_game_data(int stage_no, bool keep_weapon,Player *player, Game_State *Map_Data);
 #endif
