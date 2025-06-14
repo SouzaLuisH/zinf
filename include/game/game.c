@@ -15,7 +15,7 @@ Game_State Map_Data;
 
 // ----------------- TEMPORARIO ----------------//
 
-char proto_mapa(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
+bool proto_mapa(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
 {
     int i = 0, j = 0;
     FILE *arq_map = fopen(arq_nome, "r");
@@ -42,6 +42,7 @@ char proto_mapa(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
         }
         j = 0;
     }
+    return 0;
 }
 
 void draw_map(Game_State *state, int width, int height)
@@ -216,9 +217,24 @@ bool check_wall_colision(Vector2D position, Game_State *map)
 
 bool check_life_colision(Vector2D position, int *life_position, Game_State *map)
 {
+
+    float player_hitbox_x = position.x;
+    float player_hitbox_y = position.y;
+    float player_hitbox_width = PLAYER_HITBOX_SIZE;
+    float player_hitbox_height = PLAYER_HITBOX_SIZE;
+
     for (int i = 0; i < map->n_lives; i++)
     {
-        if (position.x == map->lives[i].position.x && position.y == map->lives[i].position.y)
+        float life_x = map->lives[i].position.x;
+        float life_y = map->lives[i].position.y;
+        float life_width = TILE_SIZE;
+        float life_height = TILE_SIZE;
+
+        // Verifica colisão AABB entre o jogador e a parede
+        if (player_hitbox_x < life_x + life_width &&
+            player_hitbox_x + player_hitbox_width > life_x &&
+            player_hitbox_y < life_y + life_height &&
+            player_hitbox_y + player_hitbox_height > life_y)
         {
             *life_position = i;
             return true;
@@ -230,9 +246,25 @@ bool check_life_colision(Vector2D position, int *life_position, Game_State *map)
 
 bool check_weapon_colision(Vector2D position, int *weapon_position, Game_State *map)
 {
+
+    // Define a área de colisão(hitbox) do jogador, centralizada
+    float player_hitbox_x = position.x;
+    float player_hitbox_y = position.y;
+    float player_hitbox_width = PLAYER_HITBOX_SIZE;
+    float player_hitbox_height = PLAYER_HITBOX_SIZE;
+
     for (int i = 0; i < map->n_weapons; i++)
     {
-        if (position.x == map->weapons[i].position.x && position.y == map->weapons[i].position.y)
+        float weapon_x = map->weapons[i].position.x;
+        float weapon_y = map->weapons[i].position.y;
+        float weapon_width = TILE_SIZE;
+        float weapon_height = TILE_SIZE;
+
+        // Verifica colisão AABB entre o jogador e a parede
+        if (player_hitbox_x < weapon_x + weapon_width &&
+            player_hitbox_x + player_hitbox_width > weapon_x &&
+            player_hitbox_y < weapon_y + weapon_height &&
+            player_hitbox_y + player_hitbox_height > weapon_y)
         {
             *weapon_position = i;
             return true;
@@ -244,9 +276,24 @@ bool check_weapon_colision(Vector2D position, int *weapon_position, Game_State *
 
 bool check_monster_player_colision(Vector2D position, int *monster_position, Game_State *map)
 {
+
+    float player_hitbox_x = position.x;
+    float player_hitbox_y = position.y;
+    float player_hitbox_width = PLAYER_HITBOX_SIZE;
+    float player_hitbox_height = PLAYER_HITBOX_SIZE;
+
     for (int i = 0; i < map->n_monsters; i++)
     {
-        if (position.x == map->monsters[i].position.x && position.y == map->monsters[i].position.y)
+        float monster_x = map->monsters[i].position.x;
+        float monster_y = map->monsters[i].position.y;
+        float monster_width = TILE_SIZE;
+        float monster_height = TILE_SIZE;
+
+        // AABB colision
+        if (player_hitbox_x < monster_x + monster_width &&
+            player_hitbox_x + player_hitbox_width > monster_x &&
+            player_hitbox_y < monster_y + monster_height &&
+            player_hitbox_y + player_hitbox_height > monster_y)
         {
             *monster_position = i;
             return true;
@@ -317,9 +364,9 @@ void handle_player_movement(Player *player, Game_State *map, uint8_t key_pressed
     if (x_component == 0 & y_component == 0)
         return;
 
-    // TODO, normalize vector if player is moving in diagonal
-    Vector2D new_player_pos = {player->position.x + x_component * DEFAULT_PLAYER_VELOCITY * 0.016,
-                               player->position.y + y_component * DEFAULT_PLAYER_VELOCITY * 0.016};
+    // TO DO, normalize vector if player is moving in diagonal
+    Vector2D new_player_pos = {player->position.x + x_component * DEFAULT_PLAYER_VELOCITY * get_frame_time(),
+                               player->position.y + y_component * DEFAULT_PLAYER_VELOCITY * get_frame_time()};
 
     if (check_wall_colision(new_player_pos, map) == false)
     {
@@ -343,9 +390,11 @@ void handle_player_monster_interation(Player *player, Game_State *map)
             }
             else
             {
-                player->lives -= 1;
-                handle_player_movement(player, map, 's'); // TODO implement move by orientation
-                handle_player_movement(player, map, 'a'); // TODO implement move by orientation
+                // TODO levar dano mas ficar 1 tempo invuneravel para nao levar danos infinitos
+                // talvez flag na struct para piscar na tela;
+                // player->lives -= 1;
+                Vector2D new_position = {player->position.x - 10, player->position.y + 10};
+                move_player(player, &new_position);
             }
 
             if (DEBUG_PRINTS)
@@ -386,6 +435,7 @@ bool check_user_active_weapon(uint8_t input)
 int init_game_data(int stage_no, bool keep_weapon)
 {
     char arq_path[50] = {0};
+    bool is_map_not_read = 0;
     sprintf(arq_path, "../../include/game/maps/mapa_%d.txt", stage_no);
     char archive[MAP_HEIGHT][MAP_WIDTH];
 
@@ -393,7 +443,12 @@ int init_game_data(int stage_no, bool keep_weapon)
     {
         printf("============\n Map Path: %s \n ============", arq_path);
     }
-    proto_mapa(archive, arq_path); // TODO get the value to check the end of the game
+    is_map_not_read = proto_mapa(archive, arq_path);
+
+    if(is_map_not_read){
+        return 1;
+    }
+
     player_init_status(&Link, keep_weapon);
     get_player_initial_position(&Link, archive, MAP_HEIGHT, MAP_WIDTH);
     get_initial_position_of_all_elements(&Map_Data, archive, MAP_WIDTH, MAP_HEIGHT);
@@ -406,9 +461,11 @@ int init_game_data(int stage_no, bool keep_weapon)
     return 0;
 }
 
-void game_loop()
+int game_loop()
 {
     uint8_t keys_read = 0;
+    static int stage_conter = 1;
+    int finish_of_game = 0;
     read_keyboard(&keys_read, true);
 
     handle_player_movement(&Link, &Map_Data, keys_read);
@@ -418,19 +475,20 @@ void game_loop()
 
     if (check_win_condition(&Map_Data))
     {
+        stage_conter++;
         free_all_elements(&Map_Data);
-        init_game_data(2, true); // TODO, incrementar 1 mapa
+        finish_of_game = init_game_data(stage_conter, true); 
+        if(finish_of_game)
+        {
+            return 1;
+        }
+
     }
 
     handle_player_weapon(&Link, check_user_active_weapon(keys_read));
     handle_player_monster_interation(&Link, &Map_Data);
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
-}
-
-int finish_game()
-{
-    free_all_elements(&Map_Data);
-
     return 0;
 }
+

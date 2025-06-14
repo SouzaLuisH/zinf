@@ -7,9 +7,9 @@
 #define DEBUG_PRINTS true
 
 //----- GAME DEFINES ----//
-#define DEFAULT_PLAYER_VELOCITY 40 // pixels per frame
+#define DEFAULT_PLAYER_VELOCITY 200 // pixels per frame
 #define MAX_ENEMIES_PER_LEVEL 5
-#define TILE_SIZE 55.0f
+#define TILE_SIZE 60.0f
 #define PLAYER_HITBOX_SIZE 50.0f
 
 //----- MAP DEFINES ----//
@@ -88,8 +88,7 @@ typedef struct
 } Game_State;
 
 // --------------- FUNCTION HEADERS --------//
-void game_loop();
+int game_loop();
 int init_game_data(int stage_no, bool keep_weapon);
-int finish_game();
 
 #endif

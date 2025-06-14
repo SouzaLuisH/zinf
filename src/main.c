@@ -7,8 +7,8 @@
 #include "game_def.h"
 #include "keyboard.h"
 
-#define WINDOW_WIDHT 1200
-#define WINDOW_HEIGHT 800
+#define WINDOW_WIDHT 1320
+#define WINDOW_HEIGHT 880
 
 //------------------------ Global Var--------------------------------//
 
@@ -65,6 +65,7 @@ int main_menu_f(uint8_t menu_key, enum game_mode_options *game_mode)
 void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 {
 	static bool is_paused = false;
+	int is_finish_of_game = 0;
 
 	if (is_paused)
 	{
@@ -90,7 +91,11 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 			is_paused = true;
 		}
 
-		game_loop();
+		is_finish_of_game = game_loop();
+
+		if(is_finish_of_game){
+			*game_mode = main_menu;
+		}
 		driver_print_text("-> [P]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
 	}
 }
@@ -137,7 +142,6 @@ int main()
 		EndDrawing();
 	}
 
-	finish_game();
 	CloseWindow();
 	return 0;
 }
