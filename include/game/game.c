@@ -45,6 +45,17 @@ void draw_map(Game_State *state, int width, int height)
     }
 }
 
+
+void draw_dashboard(Player *player){
+    
+		driver_print_text("Vidas:", 0, 0, 0);
+        char n_lifes[2]={0};
+        sprintf(n_lifes,"%d",(player->lives));
+		driver_print_text(n_lifes, 25*5, 0, 0);
+
+}
+
+
 //------- ARCHIVE FUNCTIONS ---------//
 
 int read_map_archive(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
@@ -171,6 +182,7 @@ void free_all_elements(Game_State *map)
     free(map->walls);
     free(map->weapons);
 }
+//--------------------------------------------
 
 //----- HANDLE CHECK FUNCTIONS -----//
 
@@ -466,19 +478,10 @@ void handle_player_damage(Player *player, int value_of_damage)
         player->lives -= value_of_damage;
         player->last_damage_time = TIME_PLAYER_INTOCHABLE_AFTER_DAMAGE;
     }
+
+    printf("\nvidas %d",player->lives);
 }
 
-void handle_counter_times(Player *player)
-{
-    if (player->last_damage_time > 0.0f)
-    {
-        player->last_damage_time -= get_frame_time();
-        if (player->last_damage_time < 0.0f)
-        {
-            player->last_damage_time = 0.0f;
-        }
-    }
-}
 void handle_player_monster_interation(Player *player, Game_State *map)
 {
 
@@ -489,7 +492,6 @@ void handle_player_monster_interation(Player *player, Game_State *map)
         if (monster->isEnable && check_monster_player_colision(player->position, monster->position))
         {
             handle_player_damage(player, 1);
-            
         }
 
         if (monster->isEnable && check_monster_weapon_colision(player, monster->position))
@@ -544,6 +546,34 @@ void handle_monster_movement(Game_State *map_data)
     }
 }
 
+//----- HANDLE TIMER FUNCTIONS -----//
+void handle_counter_times(Player *player)
+{
+    static float blink_player_timer = 0.2f;
+
+    if (player->last_damage_time > 0)
+    {
+        player->last_damage_time -= get_frame_time();
+
+        if (player->last_damage_time < 0.0f)
+        {
+            player->last_damage_time = 0.0f;
+        }
+
+        blink_player_timer -= get_frame_time();
+
+        if (blink_player_timer <= 0.0f)
+        {
+            player->isVisible = !(player->isVisible);
+            blink_player_timer = 0.2f; // reinicia para 0.2s em cada estado
+        }
+    }
+    else
+    {
+        player->isVisible = true;
+    }
+    //-------------
+}
 //--------------------------------------------//
 
 int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_State *Map_Data)
@@ -623,10 +653,12 @@ int game_loop(bool is_a_new_game)
     handle_player_movement(&Link, &Map_Data, keys_read);
     handle_extra_lifes(&Link, &Map_Data);
     handle_weapon_elements(&Link, &Map_Data);
+
     if (ENABLE_MONSTER_MOVE)
     {
         handle_monster_movement(&Map_Data);
     }
+
     handle_player_monster_interation(&Link, &Map_Data);
 
     //--- calling timer manager funtions
@@ -635,5 +667,6 @@ int game_loop(bool is_a_new_game)
     //--- calling draw functions
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
+    draw_dashboard(&Link);
     return 0;
 }

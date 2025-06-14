@@ -66,6 +66,7 @@ typedef struct
     bool hasWeapon;
     bool isWeaponActive;
     float last_damage_time;
+    bool isVisible;
     // warpon type
 } Player;
 

@@ -164,7 +164,7 @@ int main()
 	 - (extra) Mexer na camera
 	 - (extra) animacaoes
 	Inimigos
-	 - Movimentação aleátoria
+	 - Movimentação aleátoria OK
 	 - Pontuação OK
 	 - Sistema de vidas OK
 	 - Imagens

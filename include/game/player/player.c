@@ -9,7 +9,7 @@ int player_init_status(Player *player, bool keep_player_status)
     player->position.x = 0;
     player->position.y = 0;
     player->last_damage_time = 0.0f;
-
+    player->isVisible = true;
     if (keep_player_status == false)
     {
         player->hasWeapon = false;
@@ -134,22 +134,6 @@ void draw_player(Player *player)
     Orientation orientation = player->orientation;
     int i = 0;
 
-    static float blink_timer = 0.2f;
-    static bool is_blinking = true;
-
-    if (player->last_damage_time > 0)
-    {
-        blink_timer -= get_frame_time();
-
-        if (blink_timer <= 0.0f)
-        {
-            is_blinking = !is_blinking; // inverte entre true e false
-            blink_timer = 0.2f;         // reinicia para 0.2s em cada estado
-        }
-    }else
-    {
-        is_blinking = true;
-    }
 
     if (player_has_weapon(player) == true)
     {
@@ -180,9 +164,11 @@ void draw_player(Player *player)
         }
         else
         {
-
             // draw player body
-            driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, is_blinking ? 6 : 2); // purple
+            if (player->isVisible)
+            {
+                driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 6); // purple
+            }
         }
     }
     else
