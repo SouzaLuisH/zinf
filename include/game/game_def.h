@@ -6,8 +6,12 @@
 //----- DEBUG ------//
 #define DEBUG_PRINTS true
 
+//----- ARCHIVE ----//
+#define MAP_PATH_PREFIX "../../include/game/maps/mapa_"
+
+
 //----- GAME DEFINES ----//
-#define DEFAULT_PLAYER_VELOCITY 200 // pixels per frame
+#define DEFAULT_PLAYER_VELOCITY 200 // pixels per second
 #define MAX_ENEMIES_PER_LEVEL 5
 #define TILE_SIZE 60.0f
 #define PLAYER_HITBOX_SIZE 50.0f
@@ -88,7 +92,6 @@ typedef struct
 } Game_State;
 
 // --------------- FUNCTION HEADERS --------//
-int game_loop();
-int init_game_data(int stage_no, bool keep_weapon);
-
+int game_loop(bool is_a_new_game);
+int init_game_data(int stage_no, bool keep_weapon,Player *player, Game_State *Map_Data);
 #endif

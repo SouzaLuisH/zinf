@@ -65,6 +65,8 @@ int main_menu_f(uint8_t menu_key, enum game_mode_options *game_mode)
 void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 {
 	static bool is_paused = false;
+	static bool is_new_game = true; 
+
 	int is_finish_of_game = 0;
 
 	if (is_paused)
@@ -91,9 +93,11 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 			is_paused = true;
 		}
 
-		is_finish_of_game = game_loop();
+		is_finish_of_game = game_loop(is_new_game);
+		is_new_game = false;
 
 		if(is_finish_of_game){
+			is_new_game = false;
 			*game_mode = main_menu;
 		}
 		driver_print_text("-> [P]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
@@ -112,7 +116,7 @@ int main()
 
 	srand(32);
 	// SearchAndSetResourceDir("resources");
-	init_game_data(1, false);
+	// init_game_data(1, false);
 
 	while (!WindowShouldClose())
 	{

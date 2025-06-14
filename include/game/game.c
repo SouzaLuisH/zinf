@@ -10,9 +10,6 @@
 
 #include "game_def.h"
 
-Player Link;
-Game_State Map_Data;
-
 // ----------------- TEMPORARIO ----------------//
 
 bool proto_mapa(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
@@ -361,7 +358,7 @@ void handle_player_movement(Player *player, Game_State *map, uint8_t key_pressed
         x_component = -1.00f;
     }
 
-    if (x_component == 0 & y_component == 0)
+    if (x_component == 0 && y_component == 0)
         return;
 
     // TO DO, normalize vector if player is moving in diagonal
@@ -432,11 +429,11 @@ bool check_user_active_weapon(uint8_t input)
 }
 //--------------------------------------------
 
-int init_game_data(int stage_no, bool keep_weapon)
+int init_game_data(int stage_no, bool keep_weapon, Player *player, Game_State *Map_Data)
 {
     char arq_path[50] = {0};
     bool is_map_not_read = 0;
-    sprintf(arq_path, "../../include/game/maps/mapa_%d.txt", stage_no);
+    sprintf(arq_path,MAP_PATH_PREFIX "%d.txt", stage_no);
     char archive[MAP_HEIGHT][MAP_WIDTH];
 
     if (DEBUG_PRINTS)
@@ -445,50 +442,72 @@ int init_game_data(int stage_no, bool keep_weapon)
     }
     is_map_not_read = proto_mapa(archive, arq_path);
 
-    if(is_map_not_read){
+    if (is_map_not_read)
+    {
         return 1;
     }
 
-    player_init_status(&Link, keep_weapon);
-    get_player_initial_position(&Link, archive, MAP_HEIGHT, MAP_WIDTH);
-    get_initial_position_of_all_elements(&Map_Data, archive, MAP_WIDTH, MAP_HEIGHT);
+    player_init_status(player, keep_weapon);
+    get_player_initial_position(player, archive, MAP_HEIGHT, MAP_WIDTH);
+    get_initial_position_of_all_elements(Map_Data, archive, MAP_WIDTH, MAP_HEIGHT);
 
     if (DEBUG_PRINTS)
     {
         printf("\nMonstros: %d, Vidas: %d, Armas: %d, Paredes: %d\n",
-               Map_Data.n_monsters, Map_Data.n_lives, Map_Data.n_weapons, Map_Data.n_walls);
+               Map_Data->n_monsters, Map_Data->n_lives, Map_Data->n_weapons, Map_Data->n_walls);
     }
     return 0;
 }
 
-int game_loop()
+int game_loop(bool is_a_new_game)
 {
-    uint8_t keys_read = 0;
+    //--- game structs
+    static Player Link;
+    static Game_State Map_Data;
+
+    // -- game aux vars
     static int stage_conter = 1;
+    static bool is_first_stage = true;
     int finish_of_game = 0;
-    read_keyboard(&keys_read, true);
+    uint8_t keys_read = 0;
 
-    handle_player_movement(&Link, &Map_Data, keys_read);
-    handle_extra_lifes(&Link, &Map_Data);
-    handle_weapon_elements(&Link, &Map_Data);
-    //---
+    // -- init game verifications
+    if (is_a_new_game)
+    {
+        stage_conter = 1;
+        is_first_stage = true;
+    }
 
+    if (is_first_stage)
+    {
+        is_first_stage = false;
+        finish_of_game = init_game_data(stage_conter, false, &Link, &Map_Data);
+        if (finish_of_game)
+        {
+            return 1;
+        }
+    }
+
+    // -- fisish game verifications
     if (check_win_condition(&Map_Data))
     {
         stage_conter++;
         free_all_elements(&Map_Data);
-        finish_of_game = init_game_data(stage_conter, true); 
-        if(finish_of_game)
+        finish_of_game = init_game_data(stage_conter, true, &Link, &Map_Data);
+        if (finish_of_game)
         {
             return 1;
         }
-
     }
 
+    //--- calling game funcions
+    read_keyboard(&keys_read, true);
+    handle_player_movement(&Link, &Map_Data, keys_read);
+    handle_extra_lifes(&Link, &Map_Data);
+    handle_weapon_elements(&Link, &Map_Data);
     handle_player_weapon(&Link, check_user_active_weapon(keys_read));
     handle_player_monster_interation(&Link, &Map_Data);
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
     return 0;
 }
-
