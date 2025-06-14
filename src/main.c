@@ -93,8 +93,9 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 		{
 			is_paused = true;
 		}
-
-		is_finish_of_game = game_loop(is_new_game);
+		
+		//----------- RUN DA GAME ----------//
+		is_finish_of_game = game_loop(is_new_game); 
 		is_new_game = false;
 
 		if (is_finish_of_game)
@@ -118,7 +119,6 @@ int main()
 
 	srand(32);
 	// SearchAndSetResourceDir("resources");
-	// init_game_data(1, false);
 
 	while (!WindowShouldClose())
 	{
