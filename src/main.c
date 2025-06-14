@@ -79,6 +79,7 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 		if (menu_key & KEY_BIT_ENTER)
 		{
 			is_paused = false;
+			is_new_game = true;
 			*game_mode = main_menu;
 		}
 		else if (menu_key & KEY_BIT_W)
