@@ -272,28 +272,65 @@ bool check_weapon_colision(Vector2D position, int *weapon_position, Game_State *
     return false;
 }
 
-bool check_monster_player_colision(Vector2D position, int *monster_position, Game_State *map)
+bool check_monster_player_colision(Vector2D player_position, Vector2D monster_position)
 {
 
-    float player_hitbox_x = position.x;
-    float player_hitbox_y = position.y;
+    float player_hitbox_x = player_position.x;
+    float player_hitbox_y = player_position.y;
     float player_hitbox_width = PLAYER_HITBOX_SIZE;
     float player_hitbox_height = PLAYER_HITBOX_SIZE;
 
-    for (int i = 0; i < map->n_monsters; i++)
-    {
-        float monster_x = map->monsters[i].position.x;
-        float monster_y = map->monsters[i].position.y;
-        float monster_width = TILE_SIZE;
-        float monster_height = TILE_SIZE;
+    float monster_size = TILE_SIZE;
 
-        // AABB colision
-        if (player_hitbox_x < monster_x + monster_width &&
-            player_hitbox_x + player_hitbox_width > monster_x &&
-            player_hitbox_y < monster_y + monster_height &&
-            player_hitbox_y + player_hitbox_height > monster_y)
+    // AABB colision
+    if (player_hitbox_x < monster_position.x + monster_size &&
+        player_hitbox_x + player_hitbox_width > monster_position.x &&
+        player_hitbox_y < monster_position.y + monster_size &&
+        player_hitbox_y + player_hitbox_height > monster_position.y)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool check_monster_weapon_colision(Player *player, Vector2D monster_position)
+{
+    float weapon_hitbox_x = player->position.x;
+    float weapon_hitbox_y = player->position.y;
+    float weapon_hitbox_width = TILE_SIZE;
+    float weapon_hitbox_height = TILE_SIZE;
+
+    float monster_size = TILE_SIZE;
+
+    // AABB colision - set the size and position of weapon area according the player orientation
+    switch (player->orientation)
+    {
+    case NORTH:
+        weapon_hitbox_y -= PLAYER_HITBOX_SIZE * WEAPON_N_OF_TILES;
+        weapon_hitbox_height = PLAYER_HITBOX_SIZE * WEAPON_N_OF_TILES;
+        break;
+    case SOUTH:
+        weapon_hitbox_y += PLAYER_HITBOX_SIZE;
+        weapon_hitbox_height = PLAYER_HITBOX_SIZE * WEAPON_N_OF_TILES;
+        break;
+    case WEST:
+        weapon_hitbox_x -= PLAYER_HITBOX_SIZE * WEAPON_N_OF_TILES;
+        weapon_hitbox_width = PLAYER_HITBOX_SIZE * WEAPON_N_OF_TILES;
+        break;
+    case EAST:
+        weapon_hitbox_x += PLAYER_HITBOX_SIZE;
+        weapon_hitbox_width = PLAYER_HITBOX_SIZE * WEAPON_N_OF_TILES;
+        break;
+    }
+    if (player->hasWeapon && player->isWeaponActive)
+    {
+        if (weapon_hitbox_x < monster_position.x + monster_size &&
+            weapon_hitbox_x + weapon_hitbox_width > monster_position.x &&
+            weapon_hitbox_y < monster_position.y + monster_size &&
+            weapon_hitbox_y + weapon_hitbox_height > monster_position.y)
         {
-            *monster_position = i;
+
             return true;
         }
     }
@@ -362,77 +399,83 @@ void handle_player_movement(Player *player, Game_State *map, uint8_t key_pressed
 
     float x_component = 0.0f;
     float y_component = 0.0f;
+    Orientation new_Orientation = player->orientation;
 
     if ((key_pressed & KEY_BIT_W) || (key_pressed & KEY_BIT_UP))
     {
         y_component = -1.00f;
+        new_Orientation = NORTH;
     }
     else if ((key_pressed & KEY_BIT_S) || (key_pressed & KEY_BIT_DOWN))
     {
         y_component = 1.00f;
+        new_Orientation = SOUTH;
     }
 
     if ((key_pressed & KEY_BIT_D) || (key_pressed & KEY_BIT_RIGHT))
     {
         x_component = 1.00f;
+        new_Orientation = EAST;
     }
     else if ((key_pressed & KEY_BIT_A) || (key_pressed & KEY_BIT_LEFT))
     {
         x_component = -1.00f;
+        new_Orientation = WEST;
+    }
+
+    // normalize the vector if player moves in diagonal
+    if (x_component != 0 && y_component != 0)
+    {
+        /*
+            The x and y components are unitary lenght,
+            So to normilize we just need divide the components by square root of 2.
+        */
+        x_component /= ROOT_SQUARE_OF_2; // normalize x-axis
+        y_component /= ROOT_SQUARE_OF_2; // normalize y-axis
+
+        handle_player_weapon(player, false); // if player moves in diagonal, can not use the weapon
+    }
+    else
+    { // if player moves in one direction, He can uses his weapon
+        handle_player_weapon(player, check_user_active_weapon(key_pressed));
     }
 
     if (x_component == 0 && y_component == 0)
         return;
 
-    // normalize the vector if player moves in diagonal
-    if (x_component != 0 && y_component != 0)
-    {                                    /*
-                                           The x and y components are unitary lenght,
-                                           So to normilize we just need divide the components by square root of 2.
-                                         */
-        x_component /= ROOT_SQUARE_OF_2; // normalize x-axis
-        y_component /= ROOT_SQUARE_OF_2; // normalize y-axis
-    }
-
     Vector2D new_player_pos = {player->position.x + x_component * DEFAULT_PLAYER_VELOCITY * get_frame_time(),
                                player->position.y + y_component * DEFAULT_PLAYER_VELOCITY * get_frame_time()};
 
+    if (player->orientation != new_Orientation)
+    {
+        player->orientation = new_Orientation;
+    }
+
     if (check_wall_colision(new_player_pos, map) == false)
     {
+
         move_player(player, &new_player_pos);
     }
 }
 
 void handle_player_monster_interation(Player *player, Game_State *map)
 {
-    int monster_position = 0;
 
-    if (check_monster_player_colision(player->position, &monster_position, map))
+    for (int i = 0; i < map->n_monsters; i++)
     {
-        if (map->monsters[monster_position].isEnable)
+        Enemies *monster = &map->monsters[i];
+
+        if (check_monster_player_colision(player->position, monster->position))
         {
-            if (player->hasWeapon && player->isWeaponActive)
-            {
+            player->lives -= 1;
+            // turn player intochable per some time
+            
+        }
 
-                map->monsters[monster_position].isEnable = false;
-                player->score += map->monsters[monster_position].reward;
-            }
-            else
-            {
-                // TODO levar dano mas ficar 1 tempo invuneravel para nao levar danos infinitos
-                // talvez flag na struct para piscar na tela;
-                // player->lives -= 1;
-                // Vector2D new_position = {player->position.x - 10, player->position.y + 10};
-                // move_player(player, &new_position);
-            }
-
-            if (DEBUG_PRINTS)
-            {
-
-                printf("\nPLAYER HAS WEAPON: %d", player->hasWeapon);
-                printf("\nPLAYER LIVES: %d", player->lives);
-                printf("\nPLAYER SCORE: %d\n\n", player->score);
-            }
+        if (check_monster_weapon_colision(player, monster->position))
+        {
+            monster->isEnable = false;
+            player->score += monster->reward;
         }
     }
 }
@@ -451,22 +494,22 @@ void handle_monster_movement(Game_State *map_data)
         if (delta_time_to_change_orientation[i] <= 0)
         {
             monster->orientation = (Orientation)(int)(rand() % 4);
-            delta_time_to_change_orientation[i] = 0.5f + ((float)rand() / RAND_MAX) * 2.0f; //random time to change orientaton
+            delta_time_to_change_orientation[i] = 0.5f + ((float)rand() / RAND_MAX) * 2.0f; // random time to change orientaton
         }
 
         switch (monster->orientation)
         {
         case NORTH:
-            new_position.y = -DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            new_position.y = -DEFALUT_ENEMIES_VELOCITY * get_frame_time();
             break;
         case SOUTH:
-            new_position.y = DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            new_position.y = DEFALUT_ENEMIES_VELOCITY * get_frame_time();
             break;
         case WEST:
-            new_position.x = -DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            new_position.x = -DEFALUT_ENEMIES_VELOCITY * get_frame_time();
             break;
         case EAST:
-            new_position.x = DEFALUT_ENEMIES_VELOCITY* get_frame_time();
+            new_position.x = DEFALUT_ENEMIES_VELOCITY * get_frame_time();
             break;
         }
         new_position.x += monster->position.x;
@@ -562,8 +605,10 @@ int game_loop(bool is_a_new_game)
     handle_player_movement(&Link, &Map_Data, keys_read);
     handle_extra_lifes(&Link, &Map_Data);
     handle_weapon_elements(&Link, &Map_Data);
-    handle_player_weapon(&Link, check_user_active_weapon(keys_read));
-    handle_monster_movement(&Map_Data);
+    if (ENABLE_MONSTER_MOVE)
+    {
+        handle_monster_movement(&Map_Data);
+    }
     handle_player_monster_interation(&Link, &Map_Data);
     draw_map(&Map_Data, MAP_WIDTH, MAP_HEIGHT);
     draw_player(&Link);
