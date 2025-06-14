@@ -9,4 +9,4 @@ gcc -o bin/Debug/TF  ./src/main.c \
 ./include/game/game.c -I./include/game/ \
  -I./include/game/ \
 ./bin/Debug/libraylib.a -I./build/external/raylib-master/src \
--lm -fsanitize=address -g&& cd bin/Debug && ./TF && cd ../.. 
+-lm -fsanitize=address -fsanitize=leak -g&& cd bin/Debug && ./TF && cd ../.. 
