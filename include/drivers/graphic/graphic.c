@@ -1,9 +1,115 @@
 #include "graphic.h"
 #include "raylib.h"
 
+// player
+Texture2D Player_Nouth = {0};
+Texture2D Player_South = {0};
+Texture2D Player_West = {0};
+Texture2D Player_East = {0};
+
+// monster
+Texture2D Monster_Nouth = {0};
+Texture2D Monster_South = {0};
+Texture2D Monster_West = {0};
+Texture2D Monster_East = {0};
+
 float get_frame_time()
 {
     return GetFrameTime();
+}
+
+void driver_load_all_textures()
+{
+    // player
+    Player_Nouth = LoadTexture(PLAYER_SPRITES_PATH "jogador-norte.png");
+    Player_South = LoadTexture(PLAYER_SPRITES_PATH "jogador-sul.png");
+    Player_West = LoadTexture(PLAYER_SPRITES_PATH "jogador-oeste.png");
+    Player_East = LoadTexture(PLAYER_SPRITES_PATH "jogador-leste.png");
+
+    // monster
+    Monster_Nouth = LoadTexture(MONSTER_SPRITES_PATH "monstro-norte.png");
+    Monster_South = LoadTexture(MONSTER_SPRITES_PATH "monstro-sul.png");
+    Monster_West = LoadTexture(MONSTER_SPRITES_PATH "monstro-oeste.png");
+    Monster_East = LoadTexture(MONSTER_SPRITES_PATH "monstro-leste.png");
+}
+
+void driver_unload_all_textures()
+{
+    // player
+    UnloadTexture(Player_Nouth);
+    UnloadTexture(Player_South);
+    UnloadTexture(Player_West);
+    UnloadTexture(Player_East);
+
+    // monster
+    UnloadTexture(Monster_Nouth);
+    UnloadTexture(Monster_South);
+    UnloadTexture(Monster_West);
+    UnloadTexture(Monster_East);
+}
+
+void driver_print_player(float x, float y, int orientation)
+{
+
+    enum
+    {
+        SOUTH = 0,
+        NORTH = 1,
+        WEST = 2,
+        EAST = 3
+    } Orientation_enum;
+
+    Orientation_enum = orientation;
+    Vector2 position = {x, y};
+    float scale = 0.12f;
+    switch (Orientation_enum)
+    {
+    case NORTH:
+        DrawTextureEx(Player_Nouth, position, 0.0f, scale, WHITE);
+
+        break;
+    case SOUTH:
+        DrawTextureEx(Player_South, position, 0.0f, scale, WHITE);
+
+        break;
+    case WEST:
+        DrawTextureEx(Player_West, position, 0.0f, scale, WHITE);
+        break;
+    case EAST:
+        DrawTextureEx(Player_East, position, 0.0f, scale, WHITE);
+        break;
+    }
+}
+
+void driver_monster_player(float x, float y, int orientation)
+{
+
+    enum
+    {
+        SOUTH = 0,
+        NORTH = 1,
+        WEST = 2,
+        EAST = 3
+    } Orientation_enum;
+
+    Orientation_enum = orientation;
+    Vector2 position = {x, y};
+    float scale = 0.2f;
+    switch (Orientation_enum)
+    {
+    case NORTH:
+        DrawTextureEx(Monster_Nouth, position, 0.0f, scale, WHITE);
+        break;
+    case SOUTH:
+        DrawTextureEx(Monster_South, position, 0.0f, scale, WHITE);
+        break;
+    case WEST:
+        DrawTextureEx(Monster_West, position, 0.0f, scale, WHITE);
+        break;
+    case EAST:
+        DrawTextureEx(Monster_East, position, 0.0f, scale, WHITE);
+        break;
+    }
 }
 
 void driver_print_text(char *text, int x, int y, int color)
@@ -29,15 +135,15 @@ void driver_draw_square(float x, float y, float side_lenght, int color)
     }
 
     Color availableColors[] = {
-        WHITE, // 0
-        GRAY,  // 1
-        BLACK, // 2
-        RED,   // 3
-        GREEN, // 4
+        WHITE,  // 0
+        GRAY,   // 1
+        BLACK,  // 2
+        RED,    // 3
+        GREEN,  // 4
         YELLOW, // 5
-        PURPLE, //6
-        VIOLET, //7
-        GOLD,//8
+        PURPLE, // 6
+        VIOLET, // 7
+        GOLD,   // 8
     };
 
     DrawRectangle(x, y, side_lenght, side_lenght, availableColors[color]);
