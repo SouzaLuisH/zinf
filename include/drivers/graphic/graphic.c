@@ -1,5 +1,6 @@
 #include "graphic.h"
 #include "raylib.h"
+#include <stddef.h>
 
 // player
 Texture2D Player_Nouth = {0};
@@ -12,6 +13,11 @@ Texture2D Monster_Nouth = {0};
 Texture2D Monster_South = {0};
 Texture2D Monster_West = {0};
 Texture2D Monster_East = {0};
+
+// element
+Texture2D Sword = {0};
+Texture2D Wall = {0};
+Texture2D Life = {0};
 
 float get_frame_time()
 {
@@ -31,6 +37,11 @@ void driver_load_all_textures()
     Monster_South = LoadTexture(MONSTER_SPRITES_PATH "monstro-sul.png");
     Monster_West = LoadTexture(MONSTER_SPRITES_PATH "monstro-oeste.png");
     Monster_East = LoadTexture(MONSTER_SPRITES_PATH "monstro-leste.png");
+
+    // elements
+    Sword = LoadTexture(ELEMENTS_SPRITES_PATH "espada.png");
+    Wall = LoadTexture(ELEMENTS_SPRITES_PATH "parede.png");
+    Life = LoadTexture(ELEMENTS_SPRITES_PATH "vida.png");
 }
 
 void driver_unload_all_textures()
@@ -46,6 +57,11 @@ void driver_unload_all_textures()
     UnloadTexture(Monster_South);
     UnloadTexture(Monster_West);
     UnloadTexture(Monster_East);
+
+    // elements
+    UnloadTexture(Sword);
+    UnloadTexture(Wall);
+    UnloadTexture(Life);
 }
 
 void driver_print_player(float x, float y, int orientation)
@@ -61,7 +77,7 @@ void driver_print_player(float x, float y, int orientation)
 
     Orientation_enum = orientation;
     Vector2 position = {x, y};
-    float scale = 0.12f;
+    float scale = 0.13f;
     switch (Orientation_enum)
     {
     case NORTH:
@@ -81,9 +97,8 @@ void driver_print_player(float x, float y, int orientation)
     }
 }
 
-void driver_monster_player(float x, float y, int orientation)
+void driver_print_monster(float x, float y, int orientation)
 {
-
     enum
     {
         SOUTH = 0,
@@ -94,21 +109,55 @@ void driver_monster_player(float x, float y, int orientation)
 
     Orientation_enum = orientation;
     Vector2 position = {x, y};
-    float scale = 0.2f;
+    Texture2D *Monster = NULL;
+
+    float scale = 0.16f;
+
     switch (Orientation_enum)
     {
     case NORTH:
-        DrawTextureEx(Monster_Nouth, position, 0.0f, scale, WHITE);
+        Monster = &Monster_South;
         break;
     case SOUTH:
-        DrawTextureEx(Monster_South, position, 0.0f, scale, WHITE);
+        Monster = &Monster_South;
         break;
     case WEST:
-        DrawTextureEx(Monster_West, position, 0.0f, scale, WHITE);
+
+        Monster = &Monster_West;
         break;
     case EAST:
-        DrawTextureEx(Monster_East, position, 0.0f, scale, WHITE);
+        Monster = &Monster_East;
         break;
+    }
+
+    if (Monster != NULL)
+    {
+        DrawTextureEx(*Monster, position, 0.0f, scale, WHITE);
+    }
+}
+
+void driver_print_element(float x, float y, char element)
+{
+    Vector2 position = {x, y};
+    float scale = 0.16f;
+    Texture2D *Element = NULL;
+    switch (element)
+    {
+    case 'P':
+        Element = &Wall;
+        scale = 0.24; 
+        break;
+    case 'V':
+        Element = &Life;
+        break;
+    case 'E':
+        Element = &Sword;
+        scale = 0.05;
+        break;
+    }
+    if (Element != NULL)
+    {
+        DrawTextureEx(*Element, position, 0.0f, scale, WHITE);
     }
 }
 

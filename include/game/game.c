@@ -18,7 +18,7 @@ void draw_map(Game_State *state, int width, int height)
         if (state->lives[i].isEnable)
         {
 
-            driver_draw_square(state->lives[i].position.x, state->lives[i].position.y, TILE_SIZE, MAP_COLOR_LIFE);
+            driver_print_element(state->lives[i].position.x, state->lives[i].position.y, 'V');
         }
     }
 
@@ -26,14 +26,13 @@ void draw_map(Game_State *state, int width, int height)
     {
         if (state->monsters[i].isEnable)
         {
-            // driver_draw_square(state->monsters[i].position.x, state->monsters[i].position.y, TILE_SIZE, MAP_COLOR_MONSTER);
-            driver_monster_player(state->monsters[i].position.x, state->monsters[i].position.y, state->monsters->orientation);
+            driver_print_monster(state->monsters[i].position.x, state->monsters[i].position.y, state->monsters[i].orientation);
         }
     }
 
     for (int i = 0; i < state->n_walls; i++)
     {
-        driver_draw_square(state->walls[i].x, state->walls[i].y, TILE_SIZE, MAP_COLOR_WALL);
+        driver_print_element(state->walls[i].x, state->walls[i].y, 'P');
     }
 
     for (int i = 0; i < state->n_weapons; i++)
@@ -41,14 +40,13 @@ void draw_map(Game_State *state, int width, int height)
         if (state->weapons[i].isEnable)
         {
 
-            driver_draw_square(state->weapons[i].position.x, state->weapons[i].position.y, TILE_SIZE, MAP_COLOR_WEAPON);
+            driver_print_element(state->weapons[i].position.x, state->weapons[i].position.y, 'E');
         }
     }
 }
 
 void draw_dashboard(Player *player)
 {
-
     driver_print_text("Lifes:", 0, 0, 0);
     char aux[5] = {0};
     sprintf(aux, "%d", (player->lives));
@@ -515,7 +513,7 @@ void handle_monster_movement(Game_State *map_data)
         if (monster->last_change_time <= 0)
         {
             monster->orientation = (Orientation)(int)(rand() % 4);
-            monster->last_change_time = 0.5f + ((float)rand() / RAND_MAX) * 2.0f; // random time to change orientaton
+            monster->last_change_time = 0.5f + ((float)rand() / RAND_MAX) * 1.0f; // random time to change orientaton
         }
 
         switch (monster->orientation)
@@ -533,6 +531,7 @@ void handle_monster_movement(Game_State *map_data)
             new_position.x = DEFALUT_ENEMIES_VELOCITY * get_frame_time();
             break;
         }
+
         new_position.x += monster->position.x;
         new_position.y += monster->position.y;
 
