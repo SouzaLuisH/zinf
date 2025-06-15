@@ -13,9 +13,8 @@
 //----- GAME DEFINES ----//
 #define DEFAULT_PLAYER_VELOCITY 320 // pixels per second
 #define DEFALUT_ENEMIES_VELOCITY 300 //pixels per second
-#define MAX_ENEMIES_PER_LEVEL 5
-#define TILE_SIZE 60.0f
-#define PLAYER_HITBOX_SIZE 50.0f
+#define TILE_SIZE 50.0f
+#define PLAYER_HITBOX_SIZE 44.0f
 #define WEAPON_N_OF_TILES 2
 #define TIME_PLAYER_INTOCHABLE_AFTER_DAMAGE 1.5f
 

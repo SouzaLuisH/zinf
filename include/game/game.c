@@ -26,7 +26,8 @@ void draw_map(Game_State *state, int width, int height)
     {
         if (state->monsters[i].isEnable)
         {
-            driver_draw_square(state->monsters[i].position.x, state->monsters[i].position.y, TILE_SIZE, MAP_COLOR_MONSTER);
+            // driver_draw_square(state->monsters[i].position.x, state->monsters[i].position.y, TILE_SIZE, MAP_COLOR_MONSTER);
+            driver_monster_player(state->monsters[i].position.x, state->monsters[i].position.y, state->monsters->orientation);
         }
     }
 
@@ -45,16 +46,18 @@ void draw_map(Game_State *state, int width, int height)
     }
 }
 
+void draw_dashboard(Player *player)
+{
 
-void draw_dashboard(Player *player){
-    
-		driver_print_text("Vidas:", 0, 0, 0);
-        char n_lifes[2]={0};
-        sprintf(n_lifes,"%d",(player->lives));
-		driver_print_text(n_lifes, 25*5, 0, 0);
+    driver_print_text("Lifes:", 0, 0, 0);
+    char aux[5] = {0};
+    sprintf(aux, "%d", (player->lives));
+    driver_print_text(aux, 25 * 5, 0, 0);
 
+    driver_print_text("Score:", 0, 35, 0);
+    sprintf(aux, "%d", (player->score));
+    driver_print_text(aux, 25 * 6, 35, 0);
 }
-
 
 //------- ARCHIVE FUNCTIONS ---------//
 
@@ -478,8 +481,6 @@ void handle_player_damage(Player *player, int value_of_damage)
         player->lives -= value_of_damage;
         player->last_damage_time = TIME_PLAYER_INTOCHABLE_AFTER_DAMAGE;
     }
-
-    printf("\nvidas %d",player->lives);
 }
 
 void handle_player_monster_interation(Player *player, Game_State *map)

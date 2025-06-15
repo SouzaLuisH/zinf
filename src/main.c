@@ -7,8 +7,8 @@
 #include "game_def.h"
 #include "keyboard.h"
 
-#define WINDOW_WIDHT 1320
-#define WINDOW_HEIGHT 880
+#define WINDOW_WIDHT TILE_SIZE*MAP_WIDTH
+#define WINDOW_HEIGHT TILE_SIZE*MAP_HEIGHT
 
 //------------------------ Global type Var--------------------------------//
 
@@ -114,7 +114,8 @@ int main()
 	uint8_t menu_key_press = 0;
 
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-	InitWindow(WINDOW_WIDHT, WINDOW_HEIGHT, "ZINF");
+	InitWindow(WINDOW_WIDHT+120, WINDOW_HEIGHT+80, "ZINF");
+	driver_load_all_textures();
 	SetExitKey(0);
 
 	srand(32);
@@ -138,6 +139,7 @@ int main()
 			// case ranking
 
 		case quit:
+		    driver_unload_all_textures();
 			CloseWindow();
 			break;
 
