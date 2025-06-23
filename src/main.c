@@ -82,14 +82,14 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 			is_new_game = true;
 			*game_mode = main_menu;
 		}
-		else if (menu_key & KEY_BIT_W)
+		else if (menu_key & KEY_BIT_W || menu_key & KEY_BIT_TAB)
 		{
 			is_paused = false;
 		}
 	}
 	else
 	{
-		if (menu_key & KEY_BIT_P)
+		if (menu_key & KEY_BIT_TAB)
 		{
 			is_paused = true;
 		}
@@ -103,7 +103,7 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode)
 			is_new_game = true;
 			*game_mode = main_menu;
 		}
-		driver_print_text("-> [P]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
+		driver_print_text("-> [Tab]: pause ", WINDOW_WIDHT - 300, WINDOW_HEIGHT - 50, 0);
 	}
 }
 
