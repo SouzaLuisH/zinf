@@ -18,7 +18,7 @@ void draw_map(Game_State *state, int width, int height)
         if (state->lives[i].isEnable)
         {
 
-            driver_print_element(state->lives[i].position.x, state->lives[i].position.y, 'V');
+            driver_print_element(state->lives[i].position.x, state->lives[i].position.y + STATUS_BOARD_OFFSET, 'V');
         }
     }
 
@@ -26,13 +26,13 @@ void draw_map(Game_State *state, int width, int height)
     {
         if (state->monsters[i].isEnable)
         {
-            driver_print_monster(state->monsters[i].position.x, state->monsters[i].position.y, state->monsters[i].orientation);
+            driver_print_monster(state->monsters[i].position.x, state->monsters[i].position.y + STATUS_BOARD_OFFSET, state->monsters[i].orientation);
         }
     }
 
     for (int i = 0; i < state->n_walls; i++)
     {
-        driver_print_element(state->walls[i].x, state->walls[i].y, 'P');
+        driver_print_element(state->walls[i].x, state->walls[i].y + STATUS_BOARD_OFFSET, 'P');
     }
 
     for (int i = 0; i < state->n_weapons; i++)
@@ -40,21 +40,14 @@ void draw_map(Game_State *state, int width, int height)
         if (state->weapons[i].isEnable)
         {
 
-            driver_print_element(state->weapons[i].position.x, state->weapons[i].position.y, 'E');
+            driver_print_element(state->weapons[i].position.x, state->weapons[i].position.y + STATUS_BOARD_OFFSET, 'E');
         }
     }
 }
 
 void draw_dashboard(Player *player)
 {
-    driver_print_text("Lifes:", 0, 0, 0);
-    char aux[5] = {0};
-    sprintf(aux, "%d", (player->lives));
-    driver_print_text(aux, 25 * 5, 0, 0);
-
-    driver_print_text("Score:", 0, 35, 0);
-    sprintf(aux, "%d", (player->score));
-    driver_print_text(aux, 25 * 6, 35, 0);
+    driver_print_statusboard(player->lives, player->score, 2, MAP_WIDTH * TILE_SIZE, STATUS_BOARD_OFFSET);
 }
 
 //------- ARCHIVE FUNCTIONS ---------//

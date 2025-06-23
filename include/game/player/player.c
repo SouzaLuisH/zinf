@@ -140,7 +140,7 @@ void draw_player(Player *player)
         {
             // draw player body
             // driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 7); // violet
-            driver_print_player(x_coord, y_coord, player->orientation);
+            driver_print_player(x_coord, y_coord + STATUS_BOARD_OFFSET, player->orientation);
 
             for (i = 1; i <= WEAPON_N_OF_TILES; i++)
             {
@@ -148,16 +148,16 @@ void draw_player(Player *player)
                 switch (player->orientation) // draw player weapon
                 {
                 case NORTH:
-                    driver_draw_square(x_coord, (y_coord - PLAYER_HITBOX_SIZE * i), PLAYER_HITBOX_SIZE, 8); // gold
+                    driver_draw_square(x_coord, (y_coord - PLAYER_HITBOX_SIZE * i) + STATUS_BOARD_OFFSET, PLAYER_HITBOX_SIZE, 8); // gold
                     break;
                 case SOUTH:
-                    driver_draw_square(x_coord, (y_coord + PLAYER_HITBOX_SIZE * i), PLAYER_HITBOX_SIZE, 8); // gold
+                    driver_draw_square(x_coord, (y_coord + PLAYER_HITBOX_SIZE * i) + STATUS_BOARD_OFFSET, PLAYER_HITBOX_SIZE, 8); // gold
                     break;
                 case WEST:
-                    driver_draw_square((x_coord - PLAYER_HITBOX_SIZE * i), y_coord, PLAYER_HITBOX_SIZE, 8); // gold
+                    driver_draw_square((x_coord - PLAYER_HITBOX_SIZE * i), y_coord + STATUS_BOARD_OFFSET, PLAYER_HITBOX_SIZE, 8); // gold
                     break;
                 case EAST:
-                    driver_draw_square((x_coord + PLAYER_HITBOX_SIZE * i), y_coord, PLAYER_HITBOX_SIZE, 8); // gold
+                    driver_draw_square((x_coord + PLAYER_HITBOX_SIZE * i), y_coord + STATUS_BOARD_OFFSET, PLAYER_HITBOX_SIZE, 8); // gold
                     break;
                 }
             }
@@ -168,7 +168,7 @@ void draw_player(Player *player)
             if (player->isVisible)
             {
                 // driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 6); // purple
-                driver_print_player(x_coord, y_coord, player->orientation);
+                driver_print_player(x_coord, y_coord + STATUS_BOARD_OFFSET, player->orientation);
             }
         }
     }
@@ -176,6 +176,10 @@ void draw_player(Player *player)
     {
         // draw player body without wearpon
         // driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 4); // green
-        driver_print_player(x_coord, y_coord, player->orientation);
+        if (player->isVisible)
+        {
+            // driver_draw_square(x_coord, y_coord, PLAYER_HITBOX_SIZE, 6); // purple
+            driver_print_player(x_coord, y_coord + STATUS_BOARD_OFFSET, player->orientation);
+        }
     }
 }
