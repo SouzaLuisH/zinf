@@ -1,23 +1,24 @@
 #include "graphic.h"
 #include "raylib.h"
 #include <stddef.h>
+#include <stdio.h>
 
 // player
-Texture2D Player_Nouth = {0};
-Texture2D Player_South = {0};
-Texture2D Player_West = {0};
-Texture2D Player_East = {0};
+static Texture2D Player_Nouth = {0};
+static Texture2D Player_South = {0};
+static Texture2D Player_West = {0};
+static Texture2D Player_East = {0};
 
 // monster
-Texture2D Monster_Nouth = {0};
-Texture2D Monster_South = {0};
-Texture2D Monster_West = {0};
-Texture2D Monster_East = {0};
+static Texture2D Monster_Nouth = {0};
+static Texture2D Monster_South = {0};
+static Texture2D Monster_West = {0};
+static Texture2D Monster_East = {0};
 
 // element
-Texture2D Sword = {0};
-Texture2D Wall = {0};
-Texture2D Life = {0};
+static Texture2D Sword = {0};
+static Texture2D Wall = {0};
+static Texture2D Life = {0};
 
 float get_frame_time()
 {
@@ -161,6 +162,17 @@ void driver_print_element(float x, float y, char element)
     }
 }
 
+void driver_print_statusboard(int player_lives,int player_score, int game_stage, int width, int height){
+
+    char buffer[60] = {0};
+    sprintf(buffer, "Lives: %d  Score: %d   Stage: %d",player_lives,player_score,game_stage);
+    DrawRectangle(0, 0, width,height , GRAY);
+    driver_print_text(buffer,10,10,0);
+
+}
+
+
+
 void driver_print_text(char *text, int x, int y, int color)
 {
 
@@ -197,3 +209,4 @@ void driver_draw_square(float x, float y, float side_lenght, int color)
 
     DrawRectangle(x, y, side_lenght, side_lenght, availableColors[color]);
 }
+
