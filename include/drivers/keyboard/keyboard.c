@@ -32,6 +32,7 @@ uint8_t driver_keyboard(bool game_mode)
 		{KEY_ENTER, KEY_BIT_ENTER},
 		{KEY_P, KEY_BIT_P},
 		{KEY_J, KEY_BIT_J},
+		{KEY_TAB,KEY_BIT_TAB}
 
 	};
 

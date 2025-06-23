@@ -2,7 +2,7 @@
 #define KEYBOARD_H
 
 #include <stdint.h>
-#define N_KEYS_MAPPED 11
+#define N_KEYS_MAPPED 12
 
 #define KEY_BIT_W     0x01  // 0000 0001 (key 1)
 #define KEY_BIT_UP    0x01  // 0000 0001 (key 2)
@@ -19,6 +19,9 @@
 #define KEY_BIT_ENTER 0x10  // 0001 0000 (key 9)
 #define KEY_BIT_P     0x20  // 0010 0000 (key 10)
 #define KEY_BIT_J     0x40  // 0100 0000 (key 11)
+#define KEY_BIT_TAB   0x80  // 1000 0000 (key 12)
+
+
 
 
 
