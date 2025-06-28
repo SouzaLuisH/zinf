@@ -1,6 +1,7 @@
 #include "player.h"
 #include "graphic.h"
 #include <stdio.h>
+
 // Set Player Status to initial state
 int player_init_status(Player *player, bool keep_player_status)
 {

@@ -7,6 +7,7 @@ gcc -o bin/Debug/TF  ./src/main.c \
 ./include/game/player/player.c -I./include/game/player \
 ./include/game/enemies/enemies.c -I./include/game/enemies \
 ./include/game/game.c -I./include/game/ \
+./include/game/check.c -I./include/game/ \
  -I./include/game/ \
 ./bin/Debug/libraylib.a -I./build/external/raylib-master/src \
 -lm -fsanitize=address -fsanitize=leak -g&& cd bin/Debug && ./TF && cd ../.. 

@@ -1,9 +1,9 @@
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
 
-#define PLAYER_SPRITES_PATH "../../include/drivers/graphic/textures/player/"
-#define MONSTER_SPRITES_PATH "../../include/drivers/graphic/textures/monster/"
-#define ELEMENTS_SPRITES_PATH "../../include/drivers/graphic/textures/elements/"
+#define PLAYER_SPRITES_PATH "../../resources/textures/player/"
+#define MONSTER_SPRITES_PATH "../../resources/textures/monster/"
+#define ELEMENTS_SPRITES_PATH "../../resources/textures/elements/"
 
 
 
