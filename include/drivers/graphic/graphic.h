@@ -10,6 +10,7 @@
 
 float get_frame_time();
 void driver_print_statusboard(int player_lives,int player_score, int game_stage, int width, int height);
+void driver_print_end_game_victory(int width, int height);
 void driver_print_text(char *text, int x, int y, int color);
 void driver_draw_square(float x, float y, float side_lenght, int color);
 void driver_print_player(float x, float y, int orientation);

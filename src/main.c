@@ -8,7 +8,7 @@
 #include "keyboard.h"
 
 #define WINDOW_WIDHT TILE_SIZE*MAP_WIDTH
-#define WINDOW_HEIGHT TILE_SIZE*MAP_HEIGHT
+#define WINDOW_HEIGHT (TILE_SIZE*MAP_HEIGHT +STATUS_BOARD_OFFSET + 20)
 
 //------------------------ Global type Var--------------------------------//
 
@@ -114,7 +114,7 @@ int main()
 	uint8_t menu_key_press = 0;
 
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-	InitWindow(WINDOW_WIDHT+120, WINDOW_HEIGHT+80, "ZINF");
+	InitWindow(WINDOW_WIDHT, WINDOW_HEIGHT, "ZINF");
 	driver_load_all_textures();
 	SetExitKey(0);
 
@@ -162,33 +162,33 @@ int main()
 	 - criar matriz preenchida a partir deles OK
 	 - criar estrutura para os elementos iniciais do jogo OK
 	 - Plotar o mapa OK
-	 - Imagens
+	 - Imagens OK
 	 - (extra) Mexer na camera
 	 - (extra) animacaoes
 	Inimigos
 	 - Movimentação aleátoria OK
 	 - Pontuação OK
 	 - Sistema de vidas OK
-	 - Imagens
+	 - Imagens OK
 	 - (extra) inimigos mais inteligentes
 	- (extra) animacaoes
 
 	Jogador:
 	 - Posicao Inicial OK
 	 - Movimentacao OK
-	 - Orientacao
+	 - Orientacao OK
 	 - Ativacao Espada OK
 	 - Pontuacao OK
 	 - Vidas OK
 	 - Itens OK
-	 - Imagens
+	 - Imagens OK
 	 - (extra) animacaoes
 
 	Logica:
 		- Colisao com o mapa OK
 		- Ataque do inimigo OK
 		- Ataque do jogador OK
-			* ataque com espada
+			* ataque com espada OK
 		- Pontuação OK
 		- Vidas perder/ganhar OK
 		- Passar de fase OK
@@ -204,9 +204,5 @@ int main()
 		- Ranking
 			* Leitura/edição de arquivo.bin
 		- (extra) salvar jogo
-
-
-
-
 
 */

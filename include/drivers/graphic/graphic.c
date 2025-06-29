@@ -4,13 +4,13 @@
 #include <stdio.h>
 
 // player
-static Texture2D Player_Nouth = {0};
+static Texture2D Player_North = {0};
 static Texture2D Player_South = {0};
 static Texture2D Player_West = {0};
 static Texture2D Player_East = {0};
 
 // monster
-static Texture2D Monster_Nouth = {0};
+static Texture2D Monster_North = {0};
 static Texture2D Monster_South = {0};
 static Texture2D Monster_West = {0};
 static Texture2D Monster_East = {0};
@@ -28,13 +28,13 @@ float get_frame_time()
 void driver_load_all_textures()
 {
     // player
-    Player_Nouth = LoadTexture(PLAYER_SPRITES_PATH "jogador-norte.png");
+    Player_North = LoadTexture(PLAYER_SPRITES_PATH "jogador-norte.png");
     Player_South = LoadTexture(PLAYER_SPRITES_PATH "jogador-sul.png");
     Player_West = LoadTexture(PLAYER_SPRITES_PATH "jogador-oeste.png");
     Player_East = LoadTexture(PLAYER_SPRITES_PATH "jogador-leste.png");
 
     // monster
-    Monster_Nouth = LoadTexture(MONSTER_SPRITES_PATH "monstro-norte.png");
+    Monster_North = LoadTexture(MONSTER_SPRITES_PATH "monstro-norte.png");
     Monster_South = LoadTexture(MONSTER_SPRITES_PATH "monstro-sul.png");
     Monster_West = LoadTexture(MONSTER_SPRITES_PATH "monstro-oeste.png");
     Monster_East = LoadTexture(MONSTER_SPRITES_PATH "monstro-leste.png");
@@ -48,13 +48,13 @@ void driver_load_all_textures()
 void driver_unload_all_textures()
 {
     // player
-    UnloadTexture(Player_Nouth);
+    UnloadTexture(Player_North);
     UnloadTexture(Player_South);
     UnloadTexture(Player_West);
     UnloadTexture(Player_East);
 
     // monster
-    UnloadTexture(Monster_Nouth);
+    UnloadTexture(Monster_North);
     UnloadTexture(Monster_South);
     UnloadTexture(Monster_West);
     UnloadTexture(Monster_East);
@@ -67,7 +67,6 @@ void driver_unload_all_textures()
 
 void driver_print_player(float x, float y, int orientation)
 {
-
     enum
     {
         SOUTH = 0,
@@ -78,23 +77,27 @@ void driver_print_player(float x, float y, int orientation)
 
     Orientation_enum = orientation;
     Vector2 position = {x, y};
+    Texture2D *Player = NULL;
     float scale = 0.13f;
     switch (Orientation_enum)
     {
     case NORTH:
-        DrawTextureEx(Player_Nouth, position, 0.0f, scale, WHITE);
-
+        Player = &Player_North;
         break;
     case SOUTH:
-        DrawTextureEx(Player_South, position, 0.0f, scale, WHITE);
-
+        Player = &Player_South;
         break;
     case WEST:
-        DrawTextureEx(Player_West, position, 0.0f, scale, WHITE);
+        Player = &Player_West;
         break;
     case EAST:
-        DrawTextureEx(Player_East, position, 0.0f, scale, WHITE);
+        Player = &Player_East;
         break;
+    }
+
+    if (Player != NULL)
+    {
+        DrawTextureEx(*Player, position, 0.0f, scale, WHITE);
     }
 }
 
@@ -117,13 +120,12 @@ void driver_print_monster(float x, float y, int orientation)
     switch (Orientation_enum)
     {
     case NORTH:
-        Monster = &Monster_Nouth;
+        Monster = &Monster_North;
         break;
     case SOUTH:
         Monster = &Monster_South;
         break;
     case WEST:
-
         Monster = &Monster_West;
         break;
     case EAST:
@@ -146,7 +148,7 @@ void driver_print_element(float x, float y, char element)
     {
     case 'P':
         Element = &Wall;
-        scale = 0.24; 
+        scale = 0.24;
         break;
     case 'V':
         Element = &Life;
@@ -162,16 +164,23 @@ void driver_print_element(float x, float y, char element)
     }
 }
 
-void driver_print_statusboard(int player_lives,int player_score, int game_stage, int width, int height){
+void driver_print_statusboard(int player_lives, int player_score, int game_stage, int width, int height)
+{
 
     char buffer[60] = {0};
-    sprintf(buffer, "Lives: %d  Score: %d   Stage: %d",player_lives,player_score,game_stage);
-    DrawRectangle(0, 0, width,height , GRAY);
-    driver_print_text(buffer,10,10,0);
-
+    sprintf(buffer, "Lives: %d  Score: %d   Stage: %d", player_lives, player_score, game_stage);
+    DrawRectangle(0, 0, width, height, GRAY);
+    driver_print_text(buffer, 10, 10, 0);
 }
 
+void driver_print_end_game_victory(int width, int height)
+{
 
+    // char buffer[60] = {0};
+    // sprintf(buffer, "YOU WIN !");
+    // // DrawRectangle(0, 0, width, height, BLACK);
+    driver_print_text("YOU WIN !", 10, 10, 0);
+}
 
 void driver_print_text(char *text, int x, int y, int color)
 {
@@ -209,4 +218,3 @@ void driver_draw_square(float x, float y, float side_lenght, int color)
 
     DrawRectangle(x, y, side_lenght, side_lenght, availableColors[color]);
 }
-
