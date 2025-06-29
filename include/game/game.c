@@ -399,12 +399,11 @@ int game_loop(bool is_a_new_game) {
     handle_player_movement(&Link, &Map_Data, keys_read);
     handle_extra_lifes(&Link, &Map_Data);
     handle_weapon_elements(&Link, &Map_Data);
+    handle_player_monster_interation(&Link, &Map_Data);
 
     if (ENABLE_MONSTER_MOVE) {
         handle_monster_movement(&Map_Data);
     }
-
-    handle_player_monster_interation(&Link, &Map_Data);
 
     //--- Timers and drawing
     handle_counter_times(&Link);
