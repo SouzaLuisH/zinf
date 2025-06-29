@@ -10,6 +10,11 @@
 #include "keyboard.h"
 #include "player.h"
 
+typedef struct {
+    int stage_conter;
+    bool is_first_stage;
+} game_status_t;
+
 // TEMPORARIO
 void draw_map(Game_State *state, int width, int height) {
     for (int i = 0; i < state->n_lives; i++) {
@@ -64,6 +69,17 @@ int read_map_archive(char *map, char *arq_nome) {
     return 0;
 }
 
+int try_open_map(int stage_no) {
+    char arq_path[50] = {0};
+    sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
+
+    FILE *arq_map = fopen(arq_path, "r");
+    if (arq_map == NULL) {
+        return 0;
+    }
+    fclose(arq_map);
+    return 1;
+}
 //----- INITIAL MAP FUNCITONS -----//
 
 void fill_wall_positions(Vector2D *position, char map[][MAP_WIDTH], int width, int height, char target_char) {
@@ -303,18 +319,6 @@ void handle_counter_times(Player *player) {
 }
 //--------------------------------------------//
 
-int try_open_map(int stage_no) {
-    char arq_path[50] = {0};
-    sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
-
-    FILE *arq_map = fopen(arq_path, "r");
-    if (arq_map == NULL) {
-        return 0;
-    }
-    fclose(arq_map);
-    return 1;
-}
-
 int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_State *Map_Data) {
     char arq_path[50] = {0};
     char map_matrix[MAP_HEIGHT][MAP_WIDTH];
@@ -340,14 +344,33 @@ int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_S
     return 0;
 }
 
+// Helper to handle win condition, stage transition, and end game
+int handle_stage_transition(game_status_t *game_status, Player *Link, Game_State *Map_Data) {
+    if (check_win_condition(Map_Data)) {
+        if (try_open_map(game_status->stage_conter + 1) == false) {
+            driver_print_end_game_victory(TILE_SIZE * MAP_WIDTH, TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET + 20);
+
+            uint8_t keys_read = 0;
+            read_keyboard(&keys_read, false);
+            if (keys_read & KEY_BIT_ENTER) {
+                free_all_elements(Map_Data);
+                return 1;  // End game
+            }
+            return 0;  // Wait for user
+        } else {
+            game_status->stage_conter++;
+            free_all_elements(Map_Data);
+            init_game_data(game_status->stage_conter, true, Link, Map_Data);
+        }
+    }
+    return -1;  // Continue game
+}
+
 int game_loop(bool is_a_new_game) {
     //--- game structs
     static Player Link;
     static Game_State Map_Data;
-    static struct {
-        int stage_conter;
-        bool is_first_stage;
-    } game_status = {1, true};
+    static game_status_t game_status = {1, true};
 
     // Handle new game initialization
     if (is_a_new_game) {
@@ -364,23 +387,10 @@ int game_loop(bool is_a_new_game) {
         }
     }
 
-    // Check win condition and handle stage transition or end game
-    if (check_win_condition(&Map_Data)) {
-        if (try_open_map(game_status.stage_conter + 1) == false) {
-            driver_print_end_game_victory(TILE_SIZE * MAP_WIDTH, TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET + 20);
-            uint8_t keys_read = 0;
-            read_keyboard(&keys_read, true);
-
-            if (keys_read & KEY_BIT_ENTER) {
-                free_all_elements(&Map_Data);
-                return 1;
-            }
-            return 0;
-        } else {
-            game_status.stage_conter++;
-            free_all_elements(&Map_Data);
-            init_game_data(game_status.stage_conter, true, &Link, &Map_Data);
-        }
+    // Handle win/next-stage/end-game logic
+    int transition_result = handle_stage_transition(&game_status, &Link, &Map_Data);
+    if (transition_result != -1) {
+        return transition_result;
     }
 
     //--- Main game logic
