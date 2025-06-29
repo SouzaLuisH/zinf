@@ -365,7 +365,7 @@ int game_loop(bool is_a_new_game) {
 
     // Check win condition and handle stage transition or end game
     if (check_win_condition(&Map_Data)) {
-        if (!try_open_map(game_status.stage_conter + 1)) {
+        if (try_open_map(game_status.stage_conter + 1) == false) {
             driver_print_end_game_victory(TILE_SIZE * MAP_WIDTH, TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET + 20);
             uint8_t keys_read = 0;
             read_keyboard(&keys_read, true);
