@@ -8,7 +8,7 @@
 #define ENABLE_MONSTER_MOVE true
 
 //----- ARCHIVE DEFINES ----//
-#define MAP_PATH_PREFIX "../../include/game/maps/mapa_"
+#define MAP_PATH_PREFIX "../../resources/maps/mapa_"
 
 //----- GAME DEFINES ----//
 #define DEFAULT_PLAYER_VELOCITY 320 // pixels per second

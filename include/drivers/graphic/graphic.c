@@ -117,7 +117,7 @@ void driver_print_monster(float x, float y, int orientation)
     switch (Orientation_enum)
     {
     case NORTH:
-        Monster = &Monster_South;
+        Monster = &Monster_Nouth;
         break;
     case SOUTH:
         Monster = &Monster_South;

@@ -2,6 +2,8 @@
 #define KEYBOARD_H
 
 #include <stdint.h>
+#include <stdbool.h>
+
 #define N_KEYS_MAPPED 12
 
 #define KEY_BIT_W     0x01  // 0000 0001 (key 1)
