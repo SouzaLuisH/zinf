@@ -10,9 +10,10 @@ int player_init_status(Player *player, bool keep_player_status)
     player->position.y = 0;
     player->last_damage_time = 0.0f;
     player->isVisible = true;
+    player->hasWeapon = false;
+
     if (keep_player_status == false)
     {
-        player->hasWeapon = false;
         player->score = 0;
         player->lives = 3;
     }
