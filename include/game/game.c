@@ -311,6 +311,7 @@ int try_open_map(int stage_no) {
     if (arq_map == NULL) {
         return 0;
     }
+    fclose(arq_map);
     return 1;
 }
 
