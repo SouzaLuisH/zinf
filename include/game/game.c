@@ -52,9 +52,10 @@ void draw_dashboard(Player *player)
 
 //------- ARCHIVE FUNCTIONS ---------//
 
-int read_map_archive(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
+int read_map_archive(char *map, char *arq_nome)
 {
     int i = 0, j = 0;
+    char r_char = 0;
     FILE *arq_map = fopen(arq_nome, "r");
     if (arq_map == NULL)
     {
@@ -65,19 +66,17 @@ int read_map_archive(char map[MAP_HEIGHT][MAP_WIDTH], char *arq_nome)
         return 1;
     }
 
-    for (i = 0; i < MAP_HEIGHT; i++)
+    while ((r_char = fgetc(arq_map)) != EOF)
     {
-        while (j < MAP_WIDTH)
+        if (r_char != '\r' && r_char != '\n' && r_char != '\0')
         {
-            char cont = fgetc(arq_map);
-
-            if (cont != '\r' && cont != '\n' && cont != '\0')
+            if (i < MAP_WIDTH * MAP_HEIGHT)
             {
-                map[i][j] = cont;
-                j++;
+                *map = r_char;
+                map++;
+                i++;
             }
         }
-        j = 0;
     }
     return 0;
 }
@@ -572,7 +571,6 @@ void handle_counter_times(Player *player)
 int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_State *Map_Data)
 {
     char arq_path[50] = {0};
-    int is_map_not_read = 0;
     char map_matrix[MAP_HEIGHT][MAP_WIDTH];
 
     sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
@@ -582,8 +580,7 @@ int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_S
         printf("============\n Map Path: %s \n ============", arq_path);
     }
 
-    is_map_not_read = read_map_archive(map_matrix, arq_path);
-    if (is_map_not_read)
+    if (read_map_archive((char*)map_matrix, arq_path))
     {
         return 1;
     }
