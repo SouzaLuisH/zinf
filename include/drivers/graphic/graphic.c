@@ -1,8 +1,12 @@
 #include "graphic.h"
-#include "raylib.h"
+
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 
+#include "raylib.h"
+
+#define MAX_INPUT_CHARS 32
 // player
 static Texture2D Player_North = {0};
 static Texture2D Player_South = {0};
@@ -20,13 +24,11 @@ static Texture2D Sword = {0};
 static Texture2D Wall = {0};
 static Texture2D Life = {0};
 
-float get_frame_time()
-{
+float get_frame_time() {
     return GetFrameTime();
 }
 
-void driver_load_all_textures()
-{
+void driver_load_all_textures() {
     // player
     Player_North = LoadTexture(PLAYER_SPRITES_PATH "jogador-norte.png");
     Player_South = LoadTexture(PLAYER_SPRITES_PATH "jogador-sul.png");
@@ -45,8 +47,7 @@ void driver_load_all_textures()
     Life = LoadTexture(ELEMENTS_SPRITES_PATH "vida.png");
 }
 
-void driver_unload_all_textures()
-{
+void driver_unload_all_textures() {
     // player
     UnloadTexture(Player_North);
     UnloadTexture(Player_South);
@@ -65,51 +66,35 @@ void driver_unload_all_textures()
     UnloadTexture(Life);
 }
 
-void driver_print_player(float x, float y, int orientation)
-{
-    enum
-    {
-        SOUTH = 0,
-        NORTH = 1,
-        WEST = 2,
-        EAST = 3
-    } Orientation_enum;
+void driver_print_player(float x, float y, int orientation) {
+    enum { SOUTH = 0, NORTH = 1, WEST = 2, EAST = 3 } Orientation_enum;
 
     Orientation_enum = orientation;
     Vector2 position = {x, y};
     Texture2D *Player = NULL;
     float scale = 0.13f;
-    switch (Orientation_enum)
-    {
-    case NORTH:
-        Player = &Player_North;
-        break;
-    case SOUTH:
-        Player = &Player_South;
-        break;
-    case WEST:
-        Player = &Player_West;
-        break;
-    case EAST:
-        Player = &Player_East;
-        break;
+    switch (Orientation_enum) {
+        case NORTH:
+            Player = &Player_North;
+            break;
+        case SOUTH:
+            Player = &Player_South;
+            break;
+        case WEST:
+            Player = &Player_West;
+            break;
+        case EAST:
+            Player = &Player_East;
+            break;
     }
 
-    if (Player != NULL)
-    {
+    if (Player != NULL) {
         DrawTextureEx(*Player, position, 0.0f, scale, WHITE);
     }
 }
 
-void driver_print_monster(float x, float y, int orientation)
-{
-    enum
-    {
-        SOUTH = 0,
-        NORTH = 1,
-        WEST = 2,
-        EAST = 3
-    } Orientation_enum;
+void driver_print_monster(float x, float y, int orientation) {
+    enum { SOUTH = 0, NORTH = 1, WEST = 2, EAST = 3 } Orientation_enum;
 
     Orientation_enum = orientation;
     Vector2 position = {x, y};
@@ -117,103 +102,100 @@ void driver_print_monster(float x, float y, int orientation)
 
     float scale = 0.16f;
 
-    switch (Orientation_enum)
-    {
-    case NORTH:
-        Monster = &Monster_North;
-        break;
-    case SOUTH:
-        Monster = &Monster_South;
-        break;
-    case WEST:
-        Monster = &Monster_West;
-        break;
-    case EAST:
-        Monster = &Monster_East;
-        break;
+    switch (Orientation_enum) {
+        case NORTH:
+            Monster = &Monster_North;
+            break;
+        case SOUTH:
+            Monster = &Monster_South;
+            break;
+        case WEST:
+            Monster = &Monster_West;
+            break;
+        case EAST:
+            Monster = &Monster_East;
+            break;
     }
 
-    if (Monster != NULL)
-    {
+    if (Monster != NULL) {
         DrawTextureEx(*Monster, position, 0.0f, scale, WHITE);
     }
 }
 
-void driver_print_element(float x, float y, char element)
-{
+void driver_print_element(float x, float y, char element) {
     Vector2 position = {x, y};
     float scale = 0.16f;
     Texture2D *Element = NULL;
-    switch (element)
-    {
-    case 'P':
-        Element = &Wall;
-        scale = 0.24;
-        break;
-    case 'V':
-        Element = &Life;
-        break;
-    case 'E':
-        Element = &Sword;
-        scale = 0.05;
-        break;
+    switch (element) {
+        case 'P':
+            Element = &Wall;
+            scale = 0.24;
+            break;
+        case 'V':
+            Element = &Life;
+            break;
+        case 'E':
+            Element = &Sword;
+            scale = 0.05;
+            break;
     }
-    if (Element != NULL)
-    {
+    if (Element != NULL) {
         DrawTextureEx(*Element, position, 0.0f, scale, WHITE);
     }
 }
 
-void driver_print_statusboard(int player_lives, int player_score, int game_stage, int width, int height)
-{
-
+void driver_print_statusboard(int player_lives, int player_score, int game_stage, int width, int height) {
     char buffer[60] = {0};
     sprintf(buffer, "Lives: %d  Score: %d   Stage: %d", player_lives, player_score, game_stage);
     DrawRectangle(0, 0, width, height, GRAY);
     driver_print_text(buffer, 10, 10, 0);
 }
 
-void driver_print_end_game_victory(int width, int height)
-{
-
+void driver_print_end_game_victory(int width, int height) {
     // char buffer[60] = {0};
     // sprintf(buffer, "YOU WIN !");
     // // DrawRectangle(0, 0, width, height, BLACK);
     driver_print_text("YOU WIN !", 10, 10, 0);
 }
 
-void driver_print_text(char *text, int x, int y, int color)
-{
+void driver_print_end_game_defeat(int width, int height) {
+    // char buffer[60] = {0};
+    // sprintf(buffer, "YOU WIN !");
+    // // DrawRectangle(0, 0, width, height, BLACK);
+    driver_print_text("YOU DIED !", 10, 10, 0);
+}
 
+void driver_print_get_name(char *name) {
+    static Rectangle textBox = {300, 250, 200, 50};
+
+    DrawText("Digit your nickname:", 300, 200, 20, DARKGRAY);
+    DrawRectangleRec(textBox, LIGHTGRAY);
+    DrawText(name, (int)textBox.x + 5, (int)textBox.y + 15, 20, MAROON);
+}
+
+void driver_print_text(char *text, int x, int y, int color) {
     Color availableColors[] = {
-        WHITE,
-        GRAY,
-        BLACK,
-        RED,
-        GREEN,
+        WHITE, GRAY, BLACK, RED, GREEN,
     };
 
     DrawText(text, x, y, 40, availableColors[color]);
 }
 
-void driver_draw_square(float x, float y, float side_lenght, int color)
-{
-
-    if (color < 0)
-    {
+void driver_draw_square(float x, float y, float side_lenght, int color) {
+    if (color < 0) {
         return;
     }
 
     Color availableColors[] = {
-        WHITE,  // 0
-        GRAY,   // 1
-        BLACK,  // 2
-        RED,    // 3
-        GREEN,  // 4
-        YELLOW, // 5
-        PURPLE, // 6
-        VIOLET, // 7
-        GOLD,   // 8
+        WHITE,   // 0
+        GRAY,    // 1
+        BLACK,   // 2
+        RED,     // 3
+        GREEN,   // 4
+        YELLOW,  // 5
+        PURPLE,  // 6
+        VIOLET,  // 7
+        GOLD,    // 8
     };
 
     DrawRectangle(x, y, side_lenght, side_lenght, availableColors[color]);
