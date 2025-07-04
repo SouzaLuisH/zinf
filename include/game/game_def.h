@@ -87,6 +87,4 @@ typedef struct {  // TODO : create a level flag to use later, when we implement 
     int current_stage;
 } Game_State;
 
-// --------------- FUNCTION HEADERS --------//
-int game_loop(bool is_a_new_game);
 #endif

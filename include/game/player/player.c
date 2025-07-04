@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "graphic.h"
+#include "keyboard.h"
 
 // Set Player Status to initial state
 int player_init_status(Player *player, bool keep_player_status) {
@@ -151,4 +152,26 @@ void draw_player(Player *player) {
             driver_print_player(x_coord, y_coord + STATUS_BOARD_OFFSET, player->orientation);
         }
     }
+}
+
+// ----- keyboard --------//
+int get_player_name(char *player_name, int max_len) {
+    static int name_pos = 0;
+    int key = 0;
+    if (get_keyboard_letter(&key)) {
+        if (name_pos < max_len - 1) {
+            player_name[name_pos] = (char)key;
+            name_pos++;
+            player_name[name_pos] = '\0';
+        }
+    }
+    if (is_keyboard_backspace_pressed() && name_pos > 0) {
+        name_pos--;
+        player_name[name_pos] = '\0';
+    }
+    if (is_keyboard_enter_pressed() && name_pos > 0) {
+        name_pos = 0;
+        return 1;  // Name confirmed
+    }
+    return 0;
 }

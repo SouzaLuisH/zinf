@@ -1,6 +1,5 @@
 #include "check.h"
 
-#include "game_def.h"
 #include "keyboard.h"
 
 bool check_wall_colision(Vector2D position, Game_State *map) {
