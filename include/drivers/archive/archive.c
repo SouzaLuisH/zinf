@@ -35,6 +35,18 @@ int read_map_archive(char *map, char *arq_nome) {
     return 0;
 }
 
+int try_open_map(int stage_no) {
+    char arq_path[50] = {0};
+    sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
+
+    FILE *arq_map = fopen(arq_path, "r");
+    if (arq_map == NULL) {
+        return 0;
+    }
+    fclose(arq_map);
+    return 1;
+}
+
 void save_score(const char *name, int score) {
     TIPO_SCORE entry;
     strncpy(entry.nome, name, sizeof(entry.nome) - 1);

@@ -16,7 +16,7 @@ typedef struct {
     bool is_first_stage;
 } game_status_t;
 
-// TEMPORARIO
+//----- GAME DRAW FUNCITONS -----//
 void draw_map(Game_State *state, int width, int height) {
     for (int i = 0; i < state->n_lives; i++) {
         if (state->lives[i].isEnable) {
@@ -44,21 +44,9 @@ void draw_map(Game_State *state, int width, int height) {
 void draw_dashboard(Player player, game_status_t status) {
     driver_print_statusboard(player.lives, player.score, status.stage_conter, MAP_WIDTH * TILE_SIZE, STATUS_BOARD_OFFSET);
 }
-
-int try_open_map(int stage_no) {
-    char arq_path[50] = {0};
-    sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
-
-    FILE *arq_map = fopen(arq_path, "r");
-    if (arq_map == NULL) {
-        return 0;
-    }
-    fclose(arq_map);
-    return 1;
-}
+//--------------------------------------------
 
 //----- INITIAL MAP FUNCITONS -----//
-
 void fill_wall_positions(Vector2D *position, char map[][MAP_WIDTH], int width, int height, char target_char) {
     int index = 0;
     for (int i = 0; i < height; i++) {
@@ -139,7 +127,6 @@ void free_all_elements(Game_State *map) {
 //--------------------------------------------
 
 //----- HANDLE ELEMENTS FUNCTIONS -----//
-
 void handle_extra_lifes(Player *player, Game_State *map) {
     int life_position = 0;
 
@@ -270,6 +257,7 @@ void handle_monster_movement(Game_State *map_data) {
         }
     }
 }
+//--------------------------------------------//
 
 //----- HANDLE TIMER FUNCTIONS -----//
 void handle_counter_times(Player *player) {
@@ -321,30 +309,9 @@ int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_S
     }
     return 0;
 }
+//--------------------------------------------//
 
-// Helper for player name input, returns 1 if name is confirmed, 0 otherwise
-int get_player_name(char *player_name, int max_len) {
-    static int name_pos = 0;
-    int key = 0;
-    if (get_keyboard_letter(&key)) {
-        if (name_pos < max_len - 1) {
-            player_name[name_pos] = (char)key;
-            name_pos++;
-            player_name[name_pos] = '\0';
-        }
-    }
-    if (is_keyboard_backspace_pressed() && name_pos > 0) {
-        name_pos--;
-        player_name[name_pos] = '\0';
-    }
-    if (is_keyboard_enter_pressed() && name_pos > 0) {
-        name_pos = 0;
-        return 1;  // Name confirmed
-    }
-    return 0;
-}
-
-// Handles ranking input and saving after defeat
+// --- HANDLE RANKING FUNCTIONS --- //
 int handle_ranking(Player *Link, Game_State *Map_Data) {
     static int ranking_state = 0;
     static char player_name[20] = "";
@@ -371,9 +338,9 @@ int handle_ranking(Player *Link, Game_State *Map_Data) {
     }
     return -1;
 }
+//--------------------------------------------//
 
 // ---- HANDLE STAGES ---- //
-// Helper to handle win condition, stage transition, and end game
 int handle_stage_transition(game_status_t *game_status, Player *Link, Game_State *Map_Data) {
     if (check_win_condition(Map_Data)) {
         if (try_open_map(game_status->stage_conter + 1) == false) {
@@ -389,7 +356,6 @@ int handle_stage_transition(game_status_t *game_status, Player *Link, Game_State
     return -1;  // Continue game
 }
 
-// Only checks defeat and calls ranking handler if needed
 int handle_defeat(Player *Link, Game_State *Map_Data) {
     if (check_defeat_condition(*Link)) {
         driver_print_end_game_defeat(TILE_SIZE * MAP_WIDTH, TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET + 20);
