@@ -75,3 +75,11 @@ int get_keyboard_letter(int *out_letter) {
     }
     return 0;
 }
+
+int is_keyboard_backspace_pressed() {
+    return IsKeyPressed(KEY_BACKSPACE);
+}
+
+int is_keyboard_enter_pressed() {
+    return IsKeyPressed(KEY_ENTER);
+}

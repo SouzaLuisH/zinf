@@ -26,5 +26,7 @@
 uint8_t driver_keyboard(bool game_mode);
 void read_keyboard(uint8_t *key, bool game_mode);
 int get_keyboard_letter(int *out_letter);
+int is_keyboard_backspace_pressed();
+int is_keyboard_enter_pressed();
 
 #endif  // KEYBOARD_H
