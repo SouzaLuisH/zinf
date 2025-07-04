@@ -166,7 +166,7 @@ void driver_print_end_game_defeat(int width, int height) {
 }
 
 void driver_print_get_name(char *name) {
-    static Rectangle textBox = {300, 250, 200, 50};
+    static Rectangle textBox = {300, 250, 250, 50};
 
     DrawText("Digit your nickname:", 300, 200, 20, DARKGRAY);
     DrawRectangleRec(textBox, LIGHTGRAY);
