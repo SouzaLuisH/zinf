@@ -6,11 +6,8 @@
 #include "graphic.h"
 #include "keyboard.h"
 #include "raylib.h"
-#include "resource_dir.h"  // utility header for SearchAndSetResourceDir
 #include "string.h"
 
-#define WINDOW_WIDHT TILE_SIZE *MAP_WIDTH
-#define WINDOW_HEIGHT (TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET +20)
 
 //------------------------ Global type Var--------------------------------//
 
@@ -22,13 +19,35 @@ typedef enum game_mode_options {
 } GameMode;
 
 //------------------------ Menu Functions--------------------------------//
+void pause_menu_screen(uint8_t menu_key, enum game_mode_options *game_mode, bool *is_paused, bool* is_new_game){
+ static int menu_index = 1;
 
-static void draw_background(const char *image_path) {
-  static Texture2D background = {0};
-  if (background.id == 0) {
-    background = LoadTexture(image_path);
+  if (menu_key & KEY_BIT_S && menu_index < 3) {
+    menu_index++;
+
+  } else if (menu_key & KEY_BIT_W && menu_index > 1) {
+    menu_index--;
+  } else if (menu_key & KEY_BIT_ENTER) {
+    switch (menu_index) {
+      case 1:
+        *is_paused = false;
+        break;
+      case 2:
+        *is_paused = false;
+        *is_new_game = true;
+        *game_mode = main_menu;
+        break;
+      case 3:
+        *game_mode = quit;
+        break;
+    }
+    menu_index = 1;
   }
-  DrawTexture(background, 0, 0, WHITE);
+  int offset_x = 200, offset_y = WINDOW_HEIGHT / 2;
+  driver_print_text("Game Paused", offset_x, offset_y, 4);
+  driver_print_text("Resume", offset_x, offset_y*1.2, !(menu_index == 1));
+  driver_print_text("Back to Menu", offset_x, offset_y * 1.3, !(menu_index == 2));
+  driver_print_text("Quit", offset_x, offset_y * 1.4, !(menu_index == 3));
 }
 
 void main_menu_f(uint8_t menu_key, enum game_mode_options *game_mode) {
@@ -56,36 +75,19 @@ void main_menu_f(uint8_t menu_key, enum game_mode_options *game_mode) {
   int offset_x = 200, offset_y = WINDOW_HEIGHT / 2;
   driver_print_text("ZINF", offset_x, offset_y, 4);
   driver_print_text("Início", offset_x, offset_y * 1.2, !(menu_index == 1));
-  driver_print_text("Ranking", offset_x, offset_y * 1.3, !(menu_index == 2));
+  driver_print_text("Scoreboard", offset_x, offset_y * 1.3, !(menu_index == 2));
   driver_print_text("Sair", offset_x, offset_y * 1.4, !(menu_index == 3));
 }
 
 void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode) {
   ClearBackground(BLACK);
-  draw_background("../../resources/textures/background.png");
+
   static bool is_paused = false, is_new_game = true;
   int is_finish_of_game = 0;
 
   if (is_paused) {
-    DrawRectangle(50, WINDOW_HEIGHT / 2, 900, 300, RED);
-    driver_print_text("Pressione:", 80, WINDOW_HEIGHT / 2 + 80, 0);
-    driver_print_text("-> A tecla Enter para voltar ao menu", 80,
-                      WINDOW_HEIGHT / 2 + 120, 0);
-    driver_print_text("-> A tecla W para retomar ", 80, WINDOW_HEIGHT / 2 + 160,
-                      0);
-
-    if (menu_key & KEY_BIT_ENTER) {
-      is_paused = false;
-      is_new_game = true;
-      *game_mode = main_menu;
-    } else if (menu_key & KEY_BIT_W || menu_key & KEY_BIT_TAB) {
-      is_paused = false;
-    }
-
+    pause_menu_screen(menu_key,game_mode,&is_paused,&is_new_game);
   } else {
-    if (menu_key & KEY_BIT_TAB) {
-      is_paused = true;
-    }
 
     is_finish_of_game = game_loop(is_new_game);
     is_new_game = false;
@@ -94,31 +96,36 @@ void in_game_f(uint8_t menu_key, enum game_mode_options *game_mode) {
       is_new_game = true;
       *game_mode = main_menu;
     }
-    driver_print_text("-> [Tab]: pause ", WINDOW_WIDHT - 300,
-                      WINDOW_HEIGHT - 50, 0);
+
+     if (menu_key & KEY_BIT_TAB) {
+      is_paused = true;
+    }
+
+
   }
 }
 
 void ranking_f(uint8_t menu_key, enum game_mode_options *game_screen) {
-  ClearBackground(BLACK);
-  int offset_x = 100, offset_y = WINDOW_HEIGHT / 2;
-
   TIPO_SCORE scores[MAX_RANKING_ITENS] = {0};
-  int n_items = get_ranking_info(scores, MAX_RANKING_ITENS);
+  int offset_x = 100, offset_y = WINDOW_HEIGHT / 2;
   char aux[80] = {0};
+  int n_items = get_ranking_info(scores, MAX_RANKING_ITENS);
+
 
   if (menu_key & KEY_BIT_ENTER) *game_screen = main_menu;
 
-  driver_print_text("RANKING", offset_x, offset_y - 100, 4);
+  ClearBackground(BLACK);
+  driver_print_text("SCOREBOARD", offset_x, offset_y - 100, 4);
 
   if (n_items == -1) {
     sprintf(aux, "There are not enough players for the ranking");
-    driver_print_text(aux, offset_x, offset_y, 4);
+    driver_print_text(aux, offset_x, offset_y, 0);
+
   } else {
     for (int i = 0; i < n_items; i++) {
       sprintf(aux, "(%d) %s - %d", i + 1, scores[i].nome, scores[i].score);
       float idx_offset = (1.0f + (float)(i % 10) / 10);
-      driver_print_text(aux, offset_x, offset_y * idx_offset, 4);
+      driver_print_text(aux, offset_x, offset_y * idx_offset, 0);
     }
   }
 }
@@ -128,12 +135,12 @@ void ranking_f(uint8_t menu_key, enum game_mode_options *game_screen) {
 void app_loop() {
   GameMode game_screen = main_menu;
   uint8_t menu_key_press = 0;
-  SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+  SetTargetFPS(60);
   InitWindow(WINDOW_WIDHT, WINDOW_HEIGHT, "ZINF");
   driver_load_all_textures();
   SetExitKey(0);
   srand(32);
-  // SearchAndSetResourceDir("resources");
+
   while (!WindowShouldClose()) {
     BeginDrawing();
     read_keyboard(&menu_key_press, false);
@@ -173,7 +180,7 @@ int main() {
          - Plotar o mapa OK
          - Imagens OK
          - (extra) Mexer na camera
-         - (extra) animacaoes
+         - (extra) animacaoes OK
         Inimigos
          - Movimentação aleátoria OK
          - Pontuação OK
@@ -211,7 +218,7 @@ int main() {
                 - Menu principal OK
                 - Menu Pause OK
                 - Ranking
-                        * Leitura/edição de arquivo.bin
+                        * Leitura/edição de arquivo.bin OK
                 - (extra) salvar jogo
 
 */
