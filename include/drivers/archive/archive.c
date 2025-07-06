@@ -6,11 +6,6 @@
 
 #include "game_def.h"
 
-typedef struct tipo_score {
-    char nome[20];
-    int score;
-} TIPO_SCORE;
-
 int read_map_archive(char *map, char *arq_nome) {
     int i = 0, j = 0;
     char r_char = 0;
@@ -48,28 +43,91 @@ int try_open_map(int stage_no) {
 }
 
 void save_score(const char *name, int score) {
-    TIPO_SCORE entry;
-    strncpy(entry.nome, name, sizeof(entry.nome) - 1);
-    entry.nome[sizeof(entry.nome) - 1] = '\0';
-    entry.score = score;
-    FILE *f = fopen("../../resources/ranking/ranking.bin", "ab");
-    if (f) {
-        fwrite(&entry, sizeof(TIPO_SCORE), 1, f);
-        fclose(f);
+    TIPO_SCORE new_entry;
+
+    strncpy(new_entry.nome, name, sizeof(new_entry.nome) - 1);
+    new_entry.nome[sizeof(new_entry.nome) - 1] = '\0';
+    new_entry.score = score;
+
+    int count = 0;
+    TIPO_SCORE all_scores[MAX_RANKING_ITENS] = {0};
+
+    FILE *arq = fopen("../../resources/ranking/ranking.bin", "rb");
+    if (arq) {
+        for (int i = 0; i < MAX_RANKING_ITENS; i++) {
+            if (fread(&all_scores[i], sizeof(TIPO_SCORE), 1, arq)) {
+                count++;
+            }
+        }
+        fclose(arq);
+        // If ranking is full and new score is not high enough, do nothing
+        if (count == MAX_RANKING_ITENS && new_entry.score <= all_scores[MAX_RANKING_ITENS - 1].score) {
+            return;
+        }
+
+        // If ranking is not full, add new entry
+        if (count < MAX_RANKING_ITENS) {
+            all_scores[count] = new_entry;
+            count++;
+        } else {
+            // Replace lowest score with new entry
+            all_scores[MAX_RANKING_ITENS - 1] = new_entry;
+        }
+        // Sort scores
+        for (int i = (count - 1); i > 0; i--) {
+            if (all_scores[i].score > all_scores[i - 1].score) {
+                TIPO_SCORE aux = all_scores[i - 1];
+                all_scores[i - 1] = all_scores[i];
+                all_scores[i] = aux;
+            }
+        }
+    } else {
+        // No file exists, create new ranking with only this entry
+        all_scores[0] = new_entry;
+        count = 1;
+    }
+    // Write only the valid entries (up to MAX_RANKING_ITENS)
+    arq = fopen("../../resources/ranking/ranking.bin", "wb");
+    if (arq) {
+        fwrite(all_scores, sizeof(TIPO_SCORE), count, arq);
+        fclose(arq);
     }
 }
 
-void print_ranking(void) {
+int get_lowest_ranking_score(int *index_score) {
     FILE *f = fopen("../../resources/ranking/ranking.bin", "rb");
+    int lower_score = __INT_MAX__;
+    int idx = 0;
     if (f) {
-        printf("Ranking file contents:\n");
         TIPO_SCORE temp;
-        int idx = 0;
+
         while (fread(&temp, sizeof(TIPO_SCORE), 1, f) == 1) {
-            printf("%d: %s - %d\n", idx++, temp.nome, temp.score);
+            if (temp.score < lower_score) {
+                lower_score = temp.score;
+            }
+            idx++;
         }
         fclose(f);
+    }
+    *index_score = idx;
+    return lower_score;
+}
+
+int get_ranking_info(TIPO_SCORE *scores, int lenght) {
+    FILE *f = fopen("../../resources/ranking/ranking.bin", "rb");
+    int cnt =0;
+    if (f) {
+        TIPO_SCORE temp;
+       
+         for (int i = 0; i < lenght; i++) {
+            if (fread(&scores[i], sizeof(TIPO_SCORE), 1, f)) {
+                cnt++;
+            }
+        }
+        fclose(f);
+        return cnt;
     } else {
         printf("Could not open ranking file for reading.\n");
+        return -1;
     }
 }

@@ -1,5 +1,5 @@
-#ifndef GAME_C
-#define GAME_C
+#ifndef GAME_H
+#define GAME_H
 
 #include "game_def.h"
 #include "stdbool.h"

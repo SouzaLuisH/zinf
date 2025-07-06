@@ -1,5 +1,8 @@
 #include "check.h"
 
+#include <stdio.h>
+
+#include "archive.h"
 #include "keyboard.h"
 
 bool check_wall_colision(Vector2D position, Game_State *map) {
@@ -150,5 +153,20 @@ bool check_user_active_weapon(uint8_t input) {
     if (input & KEY_BIT_J) {
         return true;
     }
+    return false;
+}
+
+bool check_is_available_ranking(int i_score) {
+    int n_elements = 0;
+    int lowest_score = get_lowest_ranking_score(&n_elements);
+
+    if (i_score > lowest_score) {
+        return true;
+    }
+
+    if (n_elements < MAX_RANKING_ITENS) {
+        return true;
+    }
+
     return false;
 }

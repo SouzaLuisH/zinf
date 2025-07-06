@@ -10,6 +10,9 @@
 #define MAP_PATH_PREFIX "../../resources/maps/mapa_"
 #define MAX_LENGHT_NICKNAME 32
 
+//----- RANKING DEFINES ----//
+#define MAX_RANKING_ITENS 5
+
 //----- GAME DEFINES ----//
 #define DEFAULT_PLAYER_VELOCITY 320   // pixels per second
 #define DEFALUT_ENEMIES_VELOCITY 300  // pixels per second

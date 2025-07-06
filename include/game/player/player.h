@@ -1,5 +1,5 @@
-#ifndef PLAYER_C
-#define PLAYER_C
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include "game_def.h"
 

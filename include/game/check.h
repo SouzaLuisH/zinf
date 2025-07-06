@@ -1,5 +1,5 @@
-#ifndef CHECK_C
-#define CHECK_C
+#ifndef CHECK_H
+#define CHECK_H
 
 #include <stdint.h>
 
@@ -13,5 +13,6 @@ bool check_monster_weapon_colision(Player *player, Vector2D monster_position);
 bool check_win_condition(Game_State *map);
 bool check_defeat_condition(Player player);
 bool check_user_active_weapon(uint8_t input);
+bool check_is_available_ranking(int i_score);
 
 #endif

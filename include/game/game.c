@@ -313,30 +313,35 @@ int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_S
 
 // --- HANDLE RANKING FUNCTIONS --- //
 int handle_ranking(Player *Link, Game_State *Map_Data) {
-    static int ranking_state = 0;
+    static bool confirm_death = false;
+    ;
     static char player_name[20] = "";
     uint8_t key = 0;
-
-    if (ranking_state == 0) {
+    if (confirm_death == false) {
         read_keyboard(&key, false);
         if (key & KEY_BIT_ENTER) {
-            ranking_state = 1;
+            confirm_death = true;
             player_name[0] = '\0';
         }
         return 0;  // Wait for user
 
-    } else if (ranking_state == 1) {
-        driver_print_get_name(player_name);
+    } else if (confirm_death == true) {
+        if (check_is_available_ranking(Link->score)) {
+            driver_print_get_name(player_name);
 
-        if (get_player_name(player_name, 20)) {
-            save_score(player_name, Link->score);
+            if (get_player_name(player_name, 20)) {
+                save_score(player_name, Link->score);
+                free_all_elements(Map_Data);
+                confirm_death = false;
+                return 1;  // End game
+            }
+            return 0;  // Wait for user
+        } else {
             free_all_elements(Map_Data);
-            ranking_state = 0;
-            return 1;  // End game
+            confirm_death = false;
         }
-        return 0;  // Wait for user
     }
-    return -1;
+    return 1;  // End game
 }
 //--------------------------------------------//
 
@@ -346,7 +351,6 @@ int handle_stage_transition(game_status_t *game_status, Player *Link, Game_State
         if (try_open_map(game_status->stage_conter + 1) == false) {
             driver_print_end_game_victory(TILE_SIZE * MAP_WIDTH, TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET + 20);
             return handle_ranking(Link, Map_Data);
-
         } else {
             game_status->stage_conter++;
             free_all_elements(Map_Data);
