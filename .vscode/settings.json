@@ -52,7 +52,8 @@
 		"stdint.h": "c",
 		"archive.h": "c",
 		"stdlib.h": "c",
-		"game.h": "c"
+		"game.h": "c",
+		"check.h": "c"
 	},
 	"C_Cpp.clang_format_path": "/usr/bin/clang-format", // ou caminho correto no seu SO
 	"[c]": {
