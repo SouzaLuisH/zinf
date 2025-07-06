@@ -34,12 +34,3 @@ void fill_monster_init_data(Enemies *monsters, char map[][MAP_WIDTH], int width,
     }
 }
 
-
-
-
-void draw_monster(Enemies *Monster)
-{
-    float x_coord = Monster->position.x;
-    float y_coord = Monster->position.y;
-    driver_draw_square(x_coord,y_coord,50,3);
-}

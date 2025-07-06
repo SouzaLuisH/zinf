@@ -2,23 +2,30 @@
 #define GAME_DEF
 #include "stdbool.h"
 
-
 //----- DEBUG DEFINES ------//
 #define DEBUG_PRINTS true
 #define ENABLE_MONSTER_MOVE true
 
 //----- ARCHIVE DEFINES ----//
 #define MAP_PATH_PREFIX "../../resources/maps/mapa_"
+#define MAX_LENGHT_NICKNAME 32
+
+//----- RANKING DEFINES ----//
+#define MAX_RANKING_ITENS 5
 
 //----- GAME DEFINES ----//
-#define DEFAULT_PLAYER_VELOCITY 320 // pixels per second
-#define DEFALUT_ENEMIES_VELOCITY 300 //pixels per second
+#define DEFAULT_PLAYER_VELOCITY 220   // pixels per second
+#define DEFALUT_ENEMIES_VELOCITY 200  // pixels per second
 #define TILE_SIZE 50.0f
 #define PLAYER_HITBOX_SIZE 44.0f
 #define WEAPON_N_OF_TILES 2
 #define TIME_PLAYER_INTOCHABLE_AFTER_DAMAGE 1.5f
 #define PLAYER_BLINK_PERIOD 0.2f
 #define STATUS_BOARD_OFFSET 60
+
+//----- SCREEN DEFINES -----//
+#define WINDOW_WIDHT TILE_SIZE *MAP_WIDTH
+#define WINDOW_HEIGHT (TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET +20)
 
 //----- MATH DEFINES ----//
 #define ROOT_SQUARE_OF_2 1.4142135f
@@ -33,33 +40,23 @@
 #define MAP_LIFE_SPACE 'V'
 #define MAP_WALL_SPACE 'P'
 
-
-//TODO move colors to graphic.h
-#define MAP_COLOR_EMPTY 2   // BLACK
-#define MAP_COLOR_MONSTER 5 // YELLOW
-#define MAP_COLOR_WEAPON 1  // GRAY
-#define MAP_COLOR_LIFE 3    // RED
-#define MAP_COLOR_WALL 0    // WHITE
+// TODO move colors to graphic.h
+#define MAP_COLOR_EMPTY 2    // BLACK
+#define MAP_COLOR_MONSTER 5  // YELLOW
+#define MAP_COLOR_WEAPON 1   // GRAY
+#define MAP_COLOR_LIFE 3     // RED
+#define MAP_COLOR_WALL 0     // WHITE
 #define MAP_COLOR_UNKNOWN -1
 
-
 //---- GAME STRUTURES ----///
-typedef struct
-{
+typedef struct {
     float x;
     float y;
 } Vector2D;
 
-typedef enum
-{
-    SOUTH = 0,
-    NORTH = 1,
-    WEST = 2,
-    EAST = 3
-} Orientation;
+typedef enum { SOUTH = 0, NORTH = 1, WEST = 2, EAST = 3 } Orientation;
 
-typedef struct
-{
+typedef struct {
     Vector2D position;
     Orientation orientation;
     int score;
@@ -68,11 +65,11 @@ typedef struct
     bool isWeaponActive;
     float last_damage_time;
     bool isVisible;
+    bool isMoving;
     // warpon type
 } Player;
 
-typedef struct
-{
+typedef struct {
     Vector2D position;
     Orientation orientation;
     int lives;
@@ -81,16 +78,12 @@ typedef struct
     float last_change_time;
 } Enemies;
 
-typedef struct 
-{
+typedef struct {
     Vector2D position;
     bool isEnable;
 } Element;
 
-
-
-typedef struct
-{   //TODO : create a level flag to use later, when we implement the continue game function
+typedef struct {  // TODO : create a level flag to use later, when we implement the continue game function
     int n_walls;
     Vector2D *walls;
     int n_monsters;
@@ -99,8 +92,7 @@ typedef struct
     Element *lives;
     int n_weapons;
     Element *weapons;
+    int current_stage;
 } Game_State;
 
-// --------------- FUNCTION HEADERS --------//
-int game_loop(bool is_a_new_game);
 #endif

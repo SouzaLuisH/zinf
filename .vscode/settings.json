@@ -48,13 +48,16 @@
 		"system_error": "c",
 		"tuple": "c",
 		"typeinfo": "c",
-		"utility": "c"
+		"utility": "c",
+		"stdint.h": "c",
+		"archive.h": "c",
+		"stdlib.h": "c",
+		"game.h": "c",
+		"check.h": "c"
 	},
-	  "C_Cpp.clang_format_path": "/usr/bin/clang-format", // ou caminho correto no seu SO
-
+	"C_Cpp.clang_format_path": "/usr/bin/clang-format", // ou caminho correto no seu SO
 	"[c]": {
 		"editor.defaultFormatter": "xaver.clang-format"
 	},
-	  "editor.formatOnSave": true
-
+	"editor.formatOnSave": true
 }
