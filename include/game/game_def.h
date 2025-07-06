@@ -14,14 +14,18 @@
 #define MAX_RANKING_ITENS 5
 
 //----- GAME DEFINES ----//
-#define DEFAULT_PLAYER_VELOCITY 320   // pixels per second
-#define DEFALUT_ENEMIES_VELOCITY 300  // pixels per second
+#define DEFAULT_PLAYER_VELOCITY 220   // pixels per second
+#define DEFALUT_ENEMIES_VELOCITY 200  // pixels per second
 #define TILE_SIZE 50.0f
 #define PLAYER_HITBOX_SIZE 44.0f
 #define WEAPON_N_OF_TILES 2
 #define TIME_PLAYER_INTOCHABLE_AFTER_DAMAGE 1.5f
 #define PLAYER_BLINK_PERIOD 0.2f
 #define STATUS_BOARD_OFFSET 60
+
+//----- SCREEN DEFINES -----//
+#define WINDOW_WIDHT TILE_SIZE *MAP_WIDTH
+#define WINDOW_HEIGHT (TILE_SIZE * MAP_HEIGHT + STATUS_BOARD_OFFSET +20)
 
 //----- MATH DEFINES ----//
 #define ROOT_SQUARE_OF_2 1.4142135f
@@ -61,6 +65,7 @@ typedef struct {
     bool isWeaponActive;
     float last_damage_time;
     bool isVisible;
+    bool isMoving;
     // warpon type
 } Player;
 
