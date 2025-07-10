@@ -149,7 +149,7 @@ void driver_print_player(float x, float y, int orientation, int is_moving) {
 
   if (frames != NULL) {
     float time = GetTime();
-    int frame = ((int)(time * 8)) % PLAYER_ANIM_FRAMES;  // index of frame 8 fps
+    int frame = ((int)(time * 10)) % PLAYER_ANIM_FRAMES;  // index of frame 10 fps
 
     if (is_moving) {
       DrawTextureEx(frames[frame], position, 0.0f, scale, WHITE);
