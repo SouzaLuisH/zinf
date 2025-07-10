@@ -7,7 +7,7 @@
 #define ENABLE_MONSTER_MOVE true
 
 //----- ARCHIVE DEFINES ----//
-#define MAP_PATH_PREFIX "../../resources/maps/mapa_"
+#define MAP_PATH_PREFIX "../../resources/maps/mapa"
 #define MAX_LENGHT_NICKNAME 32
 
 //----- RANKING DEFINES ----//

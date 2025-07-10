@@ -32,7 +32,7 @@ int read_map_archive(char *map, char *arq_nome) {
 
 int try_open_map(int stage_no) {
     char arq_path[50] = {0};
-    sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
+    sprintf(arq_path, MAP_PATH_PREFIX "%02d.txt", stage_no);
 
     FILE *arq_map = fopen(arq_path, "r");
     if (arq_map == NULL) {

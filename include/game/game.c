@@ -298,7 +298,7 @@ int init_game_data(int stage_no, bool keep_player_status, Player *player, Game_S
     char arq_path[50] = {0};
     char map_matrix[MAP_HEIGHT][MAP_WIDTH];
 
-    sprintf(arq_path, MAP_PATH_PREFIX "%d.txt", stage_no);
+    sprintf(arq_path, MAP_PATH_PREFIX "%02d.txt", stage_no);
 
     if (DEBUG_PRINTS) {
         printf("============\n Map Path: %s \n ============", arq_path);
