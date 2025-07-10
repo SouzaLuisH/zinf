@@ -2,7 +2,7 @@
 # Relatório do Projeto Zinf
 
 ## Compilando e Rodando o Projeto
-Para rodar o projeto e receber instruções relacionadas a instalação de dependencias leia o arquivo ```README.md```.
+Para rodar o projeto e receber instruções relacionadas a instalação de dependencias e execuçao leia o arquivo ```README.md```.
 
 ## Resumo 
 Esse é um projeto final requerido como requisito de aprovação na disciplina de Algoritmos e Programação na Universidade Federal do Rio Grande do Sul (UFRGS). Este projeto é inspirado no jogo "The Legend of Zelda" (1986), um jogo de aventura RPG criado pela Nintendo. 
